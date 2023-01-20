@@ -5,6 +5,7 @@ import numpy as np
 
 import pointp.simulate as ps
 from pointp.plot import point_process_figure
+
 import plotly
 import plotly.express as px
 import plotly.io as pio
@@ -12,6 +13,7 @@ import plotly.graph_objs as go
 from dash import Dash, Input, Output, dcc, html, ctx
 import dash_helper as dh
 from typing import Tuple, Union, Callable
+import demo_components as dc
 
 # Only use for testing! Will crash after any runtime warning.
 # np.seterr(all="raise")  # Raise exception for runtime warnings
@@ -25,10 +27,6 @@ class Defaults:
     h_rate_max = 5
     h_x_max = 5
     bin_opacity = 0.7
-
-
-
-
 
 
 class ComponentIDs:
@@ -48,12 +46,20 @@ def homogeneous_example() -> dbc.Row:
             dh.my_col(
                 [
                     dh.my_row(
-                        dh.labeled_slider(
-                            0, Defaults.h_rate_max, "rate", id=ComponentIDs.h_rate
+                        dbc.Col(
+                            [
+                                dh.labeled_slider(
+                                    0,
+                                    Defaults.h_rate_max,
+                                    "rate",
+                                    id=ComponentIDs.h_rate,
+                                )
+                            ]
                         )
                     ),
                     dh.my_row(
                         [dh.my_col(dbc.Button("Generate", id=ComponentIDs.h_button))]
+                        # dbc.Button("Generate", id=ComponentIDs.h_button)
                     ),
                     dh.my_row(
                         dh.labeled_slider(
@@ -66,7 +72,6 @@ def homogeneous_example() -> dbc.Row:
             ),
         ]
     )
-
 
 
 @app.callback(
@@ -93,13 +98,29 @@ def update_hom_figure(n_clicks: int, rate: float, n_bins: int) -> go.Figure:
     return fig
 
 
+def ex_2_intensity_func(*args) -> Callable[[float], float]:
+    def intensity(float) -> float:
+        return np.array(args).sum()
 
+    return intensity
+
+def example_2_row() -> dbc.Row:
+    model_parameters = [
+        dc.ModelParameter("a", 0, 4),
+        dc.ModelParameter("b", -1, 2)
+    ]
+
+    return dc.pp_example_row("Example 2", model_parameters,
+                             ex_2_intensity_func, t_min=0, t_max=10)
 
 
 app.layout = html.Div(
     [
         dbc.Container(
-            [dh.header("Point Processes"), homogeneous_example()],
+            [dh.header("Point Processes"),
+             homogeneous_example(),
+             example_2_row()
+             ],
             style={"height": "100vh"},
         )
     ]
