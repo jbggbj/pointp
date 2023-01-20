@@ -12,15 +12,41 @@ import dash_helper as dh
 
 app = Dash(__name__)
 
+class Defaults:
+    h_rate_max = 5
+    h_x_max = 5
+
+
+class ComponentIDs:
+    h_fig = dh.component_id("homogeneous", "figure")
+    h_rate = dh.component_id("homogeneous_rate", "slider")
+    h_button = dh.component_id("homogeneous", "button")
+
+
 def homogeneous_example() -> dbc.Row:
-    return dh.my_row()
+    return dh.my_row(
+        [
+            dh.my_col([dcc.Graph(id=ComponentIDs.h_fig)], width=9),
+            dh.my_col(
+                [
+                    dh.my_row(
+                        dh.labeled_slider(0, Defaults.h_rate_max, "rate",
+                                          id=ComponentIDs.h_rate)),
+                    dh.my_row([dh.my_col(
+                        dbc.Button("Generate", id=ComponentIDs.h_button)
+                    )])
+                ],
+                width=3
+            )
+        ]
+    )
 
 
 app.layout = html.Div(
     [
         dbc.Container(
             [
-
+                homogeneous_example()
             ],
             style={"height": "100vh"},
         )
