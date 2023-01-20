@@ -10,7 +10,7 @@ import plotly.io as pio
 import plotly.graph_objs as go
 from dash import Dash, Input, Output, dcc, html, ctx
 import dash_helper as dh
-from typing import Tuple
+from typing import Tuple, Union, Callable
 
 # Only use for testing! Will crash after any runtime warning.
 # np.seterr(all="raise")  # Raise exception for runtime warnings
@@ -81,32 +81,7 @@ def update_hom_figure(n_clicks: int, rate: float, n_bins: int) -> go.Figure:
     if ctx.triggered_id != ComponentIDs.h_bins:
         h_example_tk = ps.h_poisson_1d(rate, [0, Defaults.h_x_max])
 
-    tk = h_example_tk
-    fig = go.Figure()
-    fig.add_trace(
-        go.Scatter(
-            x=tk, y=np.ones_like(tk), mode="markers", name="points", marker_size=15
-        )
-    )
-
-    counts_x, counts_y = pp_to_counts(tk, Defaults.h_x_max)
-    fig.add_trace(
-        go.Scatter(
-            x=counts_x,
-            y=counts_y,
-
-            mode="lines",
-            line={"shape": "hv"},
-            name="Counts",
-        )
-    )
-    bin_width = Defaults.h_x_max / n_bins
-    fig.add_trace(
-        go.Histogram(x=tk, name="binned", xbins={"size": bin_width}, autobinx=False)
-    )
-
-    fig.update_xaxes(range=[0, Defaults.h_x_max])
-    # fig.update_layout(title="Homogeneous Poisson Process")
+    fig = point_process_figure(h_example_tk, rate, Defaults.h_x_max, n_bins=n_bins)
     fig.update_layout(
         title={
             "text": "Homogeneous Poisson Process",
@@ -116,6 +91,36 @@ def update_hom_figure(n_clicks: int, rate: float, n_bins: int) -> go.Figure:
             "yanchor": "top",
         }
     )
+    return fig
+
+
+def point_process_figure(
+    tk: np.ndarray, intensity: Union[float, Callable[[float], float]], t_max: float,
+        n_bins: int = 10
+) -> go.Figure:
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=tk, y=np.ones_like(tk), mode="markers", name="points", marker_size=15
+        )
+    )
+
+    counts_x, counts_y = pp_to_counts(tk, t_max)
+    fig.add_trace(
+        go.Scatter(
+            x=counts_x,
+            y=counts_y,
+            mode="lines",
+            line={"shape": "hv"},
+            name="Counts",
+        )
+    )
+    bin_width = t_max / n_bins
+    fig.add_trace(
+        go.Histogram(x=tk, name="binned", xbins={"size": bin_width}, autobinx=False)
+    )
+
+    fig.update_xaxes(range=[0, t_max])
     return fig
 
 
