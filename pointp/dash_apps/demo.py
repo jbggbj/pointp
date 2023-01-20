@@ -94,6 +94,21 @@ def update_hom_figure(n_clicks: int, rate: float, n_bins: int) -> go.Figure:
     return fig
 
 
+def intensity_function_scatter(
+        intensity: Union[float, Callable[[float], float]],
+        t_min: float,
+        t_max: float,
+        n_pts: int = 200
+) -> go.Scatter:
+    x = np.linspace(t_min, t_max, n_pts)
+    if np.isscalar(intensity):
+        y = intensity * np.ones_like(x)
+    else:
+        y = intensity(x)
+
+    return go.Scatter(x=x, y=y, mode="lines", name="intensity")
+
+
 def point_process_figure(
     tk: np.ndarray, intensity: Union[float, Callable[[float], float]], t_max: float,
         n_bins: int = 10
@@ -104,6 +119,8 @@ def point_process_figure(
             x=tk, y=np.ones_like(tk), mode="markers", name="points", marker_size=15
         )
     )
+
+    fig.add_trace(intensity_function_scatter(intensity, 0, t_max))
 
     counts_x, counts_y = pp_to_counts(tk, t_max)
     fig.add_trace(
