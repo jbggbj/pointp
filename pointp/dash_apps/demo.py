@@ -99,10 +99,22 @@ def update_hom_figure(n_clicks: int, rate: float, n_bins: int) -> go.Figure:
 
 
 def ex_2_intensity_func(*args) -> Callable[[float], float]:
-    def intensity(float) -> float:
-        return np.array(args).sum()
+    def intensity(x: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+        rate = np.array(args).sum()
+        if np.isscalar(x):
+            return rate
+        else:
+            return rate * np.ones_like(x)
 
     return intensity
+
+
+def ex_2_draw_func(t_min, t_max, *args) -> np.ndarray:
+    return ps.h_poisson_1d(np.array(args).sum(), [t_min, t_max])
+
+
+
+
 
 def example_2_row() -> dbc.Row:
     model_parameters = [
@@ -111,7 +123,9 @@ def example_2_row() -> dbc.Row:
     ]
 
     return dc.pp_example_row("Example 2", model_parameters,
-                             ex_2_intensity_func, t_min=0, t_max=10)
+                             ex_2_intensity_func,
+                             ex_2_draw_func,
+                             t_min=0, t_max=10)
 
 
 app.layout = html.Div(

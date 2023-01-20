@@ -14,6 +14,7 @@ ModelParameter = namedtuple("ModelParameter", ["name", "min", "max"])
 def pp_example_row(
     name: str, parameters: List[ModelParameter],
         intensity_factory: Callable[[List[float]], Callable[[float], float]],
+        draw_func: Callable,
         t_min=0, t_max=1
 ) -> dbc.Row:
     example_tk = None
@@ -59,9 +60,10 @@ def pp_example_row(
     def update_fig(n_clicks: int, n_bins: int, *mparams) -> go.Figure:
         if ctx.triggered_id != bin_slider_id:
             rate = intensity_factory(mparams)
-            example_tk = ps.h_poisson_1d(rate(1), [t_min, t_max])
+            # example_tk = ps.h_poisson_1d(rate(1), [t_min, t_max])
+            example_tk = draw_func(t_min, t_max, mparams)
 
-        fig = point_process_figure(example_tk, rate(1), t_max, n_bins=n_bins)
+        fig = point_process_figure(example_tk, rate, t_max, n_bins=n_bins)
         fig.update_layout(
             title={
                 "text": "Homogeneous Poisson Process",
