@@ -2,7 +2,7 @@ import os
 import signal
 from typing import Tuple, Union
 
-import dash
+import dash.exceptions
 import dash_bootstrap_components as dbc
 from dash import Input, Output, callback, dcc, html
 
@@ -21,6 +21,11 @@ def my_col(*args, **kwargs) -> dbc.Col:
     kwargs.setdefault("width", DEFAULT_COLUMN_WIDTH)
     kwargs.setdefault("className", DEFAULT_CLASS_NAME)
     return dbc.Col(*args, **kwargs)
+
+
+def my_row(*args, **kwargs) -> dbc.Row:
+    kwargs.setdefault("justify", "evenly")
+    return dbc.Row(*args, **kwargs)
 
 
 def labeled_slider(minimum: float, maximum: float, label: str, **kwargs) -> html.Div:
@@ -76,7 +81,7 @@ def quit_button(href: str = None) -> html.Div:
     )
     def kill_app_start(button_clicks: int) -> Tuple[str, str]:
         if button_clicks > 0:
-            return button_clicked_color, "You have quit the server."
+            return button_clicked_color, "Not running."
         return button_unclicked_color, quit_button_text
 
     @callback(
@@ -94,4 +99,21 @@ def quit_button(href: str = None) -> html.Div:
     return html.Div(
         [quit_button],
         # className="d-grid gap-2 col-6 mx-auto",
+    )
+
+
+def header(title: str) -> dbc.Row:
+    """Standard header that includes title and a quit button."""
+    return my_row(
+        [
+            # For info on className, go to:
+            # https://getbootstrap.com/docs/5.1/utilities/spacing/
+            my_col(
+                html.H2(children=title, style={"text-align": "center"}),
+                width=11,
+            ),
+            my_col(quit_button(), width=1),
+        ],
+        justify="evenly",
+        style={"height": "9%"},
     )
