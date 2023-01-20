@@ -23,6 +23,17 @@ app = Dash(__name__)
 class Defaults:
     h_rate_max = 5
     h_x_max = 5
+    bin_opacity = 0.7
+
+
+colors = dh.categoricalColorScheme
+
+
+class DefaultColors:
+    points = colors[0]
+    counts = colors[2]
+    intensity = colors[4]
+    bins = colors[6]
 
 
 class ComponentIDs:
@@ -95,10 +106,10 @@ def update_hom_figure(n_clicks: int, rate: float, n_bins: int) -> go.Figure:
 
 
 def intensity_function_scatter(
-        intensity: Union[float, Callable[[float], float]],
-        t_min: float,
-        t_max: float,
-        n_pts: int = 200
+    intensity: Union[float, Callable[[float], float]],
+    t_min: float,
+    t_max: float,
+    n_pts: int = 200,
 ) -> go.Scatter:
     x = np.linspace(t_min, t_max, n_pts)
     if np.isscalar(intensity):
@@ -109,32 +120,49 @@ def intensity_function_scatter(
     return go.Scatter(x=x, y=y, mode="lines", name="intensity")
 
 
+def counts_function_scatter(tk: np.ndarray, t_max: float) -> go.Scatter:
+    counts_x, counts_y = pp_to_counts(tk, t_max)
+    return go.Scatter(
+        x=counts_x,
+        y=counts_y,
+        mode="lines",
+        line={"shape": "hv"},
+        name="Counts",
+        line_color=DefaultColors.counts,
+    )
+
+
 def point_process_figure(
-    tk: np.ndarray, intensity: Union[float, Callable[[float], float]], t_max: float,
-        n_bins: int = 10
+    tk: np.ndarray,
+    intensity: Union[float, Callable[[float], float]],
+    t_max: float,
+    n_bins: int = 10,
 ) -> go.Figure:
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
-            x=tk, y=np.ones_like(tk), mode="markers", name="points", marker_size=15
+            x=tk,
+            y=np.ones_like(tk),
+            mode="markers",
+            name="points",
+            marker_size=15,
+            marker_color=DefaultColors.points,
         )
     )
 
     fig.add_trace(intensity_function_scatter(intensity, 0, t_max))
 
-    counts_x, counts_y = pp_to_counts(tk, t_max)
-    fig.add_trace(
-        go.Scatter(
-            x=counts_x,
-            y=counts_y,
-            mode="lines",
-            line={"shape": "hv"},
-            name="Counts",
-        )
-    )
+    fig.add_trace(counts_function_scatter(tk, t_max))
     bin_width = t_max / n_bins
     fig.add_trace(
-        go.Histogram(x=tk, name="binned", xbins={"size": bin_width}, autobinx=False)
+        go.Histogram(
+            x=tk,
+            name="binned",
+            xbins={"size": bin_width},
+            autobinx=False,
+            marker_color=DefaultColors.bins,
+            opacity=Defaults.bin_opacity,
+        )
     )
 
     fig.update_xaxes(range=[0, t_max])
