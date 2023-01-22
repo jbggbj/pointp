@@ -8,7 +8,7 @@ import pointp.simulate as ps
 from pointp.plot import point_process_figure
 import numpy as np
 
-ModelParameter = namedtuple("ModelParameter", ["name", "min", "max"])
+from pointp.simulate import ModelParameter
 
 
 def pp_example_row(
