@@ -45,20 +45,6 @@ def rejection_sampling(
     return result
 
 
-# def rate(
-#     t: Union[float, np.ndarray], a: float = 1.0, b: float = 1.0
-# ) -> Union[float, np.ndarray]:
-#     scaler_input = np.isscalar(t)
-#     if scaler_input:
-#         t = np.array([t])
-#
-#     result = a * np.cos(b * 2 * np.pi * t) ** 2
-#     if scaler_input:
-#         result = result[0]
-#
-#     return result
-
-
 def rate_xy(xy: np.ndarray, a: float = 1, b: float = 1) -> np.ndarray:
     # assume size 2 * n for n points
     return np.squeeze(a + b * xy[0, :])
@@ -70,20 +56,6 @@ def rate_xy_2(xy: np.ndarray, a: float = 1, b: float = 1) -> np.ndarray:
         a * np.cos(2 * np.pi * xy[0, :]) ** 2 + b * np.sin(2 * np.pi * xy[0, :]) ** 2
     )
     return np.squeeze(result)
-
-
-# def test_rate(t: np.ndarray) -> np.ndarray:
-#     a = 2
-#     b = 5
-#     return rate(t, a=a, b=b)
-
-#
-# draw = rejection_sampling(test_rate, 0, 1, n_pts=1000)
-# pts = poisson_process(lambda t: rate(t, a=20, b=1), 0, 1)
-
-# n_pts = np.zeros(100)
-# for k in range(100):
-#     n_pts[k] = len(poisson_process(lambda t: rate(t, a=20, b=1), 0, 1))
 
 
 def h_poisson_1d(rate: float, range: [float, float] = [0, 1]) -> np.ndarray:
