@@ -4,6 +4,7 @@ import dash_bootstrap_components as dbc
 import numpy as np
 
 import pointp.simulate as ps
+import simulate
 from pointp.plot import point_process_figure
 
 import plotly
@@ -113,28 +114,35 @@ def ex_2_draw_func(t_min, t_max, *args) -> np.ndarray:
     return ps.h_poisson_1d(np.array(args).sum(), [t_min, t_max])
 
 
-
-
-
+# def example_2_row() -> dbc.Row:
+#     model_parameters = [
+#         dc.ModelParameter("a", 0, 4),
+#         dc.ModelParameter("b", -1, 2)
+#     ]
+#
+#     return dc.pp_example_row("Example 2", model_parameters,
+#                              ex_2_intensity_func,
+#                              ex_2_draw_func,
+#                              t_min=0, t_max=10)
 def example_2_row() -> dbc.Row:
-    model_parameters = [
-        dc.ModelParameter("a", 0, 4),
-        dc.ModelParameter("b", -1, 2)
-    ]
+    return dc.pp_example_row("Example 2", simulate.Homogeneous1D, t_min=0, t_max=10)
 
-    return dc.pp_example_row("Example 2", model_parameters,
-                             ex_2_intensity_func,
-                             ex_2_draw_func,
-                             t_min=0, t_max=10)
+
+def example_3_row() -> dbc.Row:
+    return dc.pp_example_row(
+        "lambda(t) = a cos(2bpit)", simulate.InHomEx1, t_min=0, t_max=1
+    )
 
 
 app.layout = html.Div(
     [
         dbc.Container(
-            [dh.header("Point Processes"),
-             homogeneous_example(),
-             example_2_row()
-             ],
+            [
+                dh.header("Point Processes"),
+                homogeneous_example(),
+                example_2_row(),
+                example_3_row(),
+            ],
             style={"height": "100vh"},
         )
     ]

@@ -10,14 +10,12 @@ import numpy as np
 
 from pointp.simulate import ModelParameter
 
-
 def pp_example_row(
-    name: str, parameters: List[ModelParameter],
-        intensity_factory: Callable[[List[float]], Callable[[float], float]],
-        draw_func: Callable,
-        t_min=0, t_max=1
+    name: str, process: "simulate.Process1D", t_min=0, t_max=1
 ) -> dbc.Row:
-    example_tk = None
+    example_tk = np.ndarray([])
+    example_process = None
+    parameters = process.model_parameters
     fig_id = dh.component_id(name, "fig")
     button_id = dh.component_id(name, "button")
     bin_slider_id = dh.component_id(name + "_bins", "slider")
@@ -58,12 +56,13 @@ def pp_example_row(
         *(standard_for_callback + model_parameter_inputs)
     )
     def update_fig(n_clicks: int, n_bins: int, *mparams) -> go.Figure:
+        global example_tk
+        global example_process
         if ctx.triggered_id != bin_slider_id:
-            rate = intensity_factory(mparams)
-            # example_tk = ps.h_poisson_1d(rate(1), [t_min, t_max])
-            example_tk = draw_func(t_min, t_max, mparams)
-
-        fig = point_process_figure(example_tk, rate, t_max, n_bins=n_bins)
+            example_process = process(*mparams)
+            example_tk = example_process.simulate(t_min, t_max)
+        fig = point_process_figure(example_tk, example_process.intensity, t_max,
+                                   n_bins=n_bins)
         fig.update_layout(
             title={
                 "text": "Homogeneous Poisson Process",
