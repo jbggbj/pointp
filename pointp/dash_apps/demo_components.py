@@ -10,6 +10,7 @@ import numpy as np
 
 from pointp.simulate import ModelParameter
 
+
 def pp_example_row(
     name: str, process: "simulate.Process1D", t_min=0, t_max=1, plot_title: str = None
 ) -> dbc.Row:
@@ -36,8 +37,8 @@ def pp_example_row(
         p.name: dh.component_id(f"{name}_{p.name}", "slider") for p in parameters
     }
     sliders = [
-        dh.labeled_slider(
-            p.min, p.max, p.name, id=slider_ids[p.name]) for p in parameters
+        dh.labeled_slider(p.min, p.max, p.name, id=slider_ids[p.name])
+        for p in parameters
     ]
     slider_rows = [dh.my_row(slider) for slider in sliders]
 
@@ -56,25 +57,24 @@ def pp_example_row(
         ]
     )
 
-    standard_for_callback = [Output(fig_id, "figure"),
-                             Input(button_id, "n_clicks"),
-                             Input(bin_slider_id, "value")
-                             ]
-    model_parameter_inputs = [
-        Input(slider_ids[p.name], "value") for p in parameters
+    standard_for_callback = [
+        Output(fig_id, "figure"),
+        Input(button_id, "n_clicks"),
+        Input(bin_slider_id, "value"),
     ]
+    model_parameter_inputs = [Input(slider_ids[p.name], "value") for p in parameters]
     # Create callbacks
-    @callback(
-        *(standard_for_callback + model_parameter_inputs)
-    )
+    @callback(*(standard_for_callback + model_parameter_inputs))
     def update_fig(n_clicks: int, n_bins: int, *mparams) -> go.Figure:
         global example_tk
         global example_process
         if ctx.triggered_id != bin_slider_id:
             example_process = process(*mparams)
             example_tk = example_process.simulate(t_min, t_max)
-        fig = point_process_figure(example_tk, example_process.intensity, t_max,
-                                   n_bins=n_bins)
+        # fig = example_process.plot_func(
+        #     example_tk, example_process.intensity, t_max, n_bins=n_bins
+        # )
+        fig = example_process.plot_func(example_tk, t_max, n_bins=n_bins)
         fig.update_layout(
             title={
                 "text": plot_title,
