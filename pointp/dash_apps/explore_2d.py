@@ -7,7 +7,7 @@ import plotly.express as px
 import pandas as pd
 
 
-def rejection_sampling(
+def rejection_sampling_2D(
     f: Callable[[np.ndarray, np.ndarray], np.ndarray],
     xbounds: tuple,
     ybounds: tuple,
@@ -40,7 +40,7 @@ def func(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     return 2 * np.ones_like(x)
 
 
-answer = rejection_sampling(func, (0, 1), (0, 1), 2, n_pts=20)
+answer = rejection_sampling_2D(func, (0, 1), (0, 1), 2, n_pts=20)
 
 
 def func2(x: np.ndarray, y: np.ndarray) -> np.ndarray:
@@ -51,7 +51,7 @@ def func2(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     return a * np.cos(b * 2 * np.pi * x) ** 2 + c * np.sin(d * 2 * np.pi * y) ** 2
 
 
-xy = rejection_sampling(func2, (0, 1), (0, 1), 3, n_pts=2000)
+xy = rejection_sampling_2D(func2, (0, 1), (0, 1), 3, n_pts=2000)
 df = pd.DataFrame(data={"x": xy[0, :], "y": xy[1, :]})
 
 # fig = px.scatter(df, x="x", y="y")

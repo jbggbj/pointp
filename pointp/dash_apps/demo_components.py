@@ -12,7 +12,7 @@ from pointp.simulate import ModelParameter
 
 
 def pp_example_row(
-    name: str, process: "simulate.Process1D", t_min=0, t_max=1, plot_title: str = None
+    name: str, process: "simulate.Process1D", bounds: list, plot_title: str = None
 ) -> dbc.Row:
     """
 
@@ -70,11 +70,11 @@ def pp_example_row(
         global example_process
         if ctx.triggered_id != bin_slider_id:
             example_process = process(*mparams)
-            example_tk = example_process.simulate(t_min, t_max)
+            example_tk = example_process.simulate(*bounds)
         # fig = example_process.plot_func(
         #     example_tk, example_process.intensity, t_max, n_bins=n_bins
         # )
-        fig = example_process.plot_func(example_tk, t_max, n_bins=n_bins)
+        fig = example_process.plot_func(example_tk, bounds[1], n_bins=n_bins)
         fig.update_layout(
             title={
                 "text": plot_title,

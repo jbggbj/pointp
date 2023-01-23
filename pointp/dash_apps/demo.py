@@ -101,7 +101,7 @@ app = Dash(__name__)
 
 def example_1_row() -> dbc.Row:
     return dc.pp_example_row(
-        "Homogeneous Poisson Process", simulate.Homogeneous1D, t_min=0, t_max=10
+        "Homogeneous Poisson Process", simulate.Homogeneous1D, [0, 10],
     )
 
 
@@ -109,8 +109,7 @@ def example_2_row() -> dbc.Row:
     return dc.pp_example_row(
         "Inhomogeneous_Example_1",
         simulate.InHomEx1,
-        t_min=0,
-        t_max=4,
+        [0, 4],
         plot_title=r"$\lambda (t) = a \cos{(2b\pi t)}$",
     )
 
@@ -119,16 +118,20 @@ def example_3_row() -> dbc.Row:
     return dc.pp_example_row(
         "Inhomogeneous_Exponential",
         simulate.InHomEx2,
-        t_min=0,
-        t_max=10,
+        [0, 10],
         plot_title=r"$\lambda (t) = \frac{a}{w}e^{-t/w}$",
     )
 
 
 def sepp_example_row() -> dbc.Row:
     return dc.pp_example_row(
-        "SEPP", simulate.SelfExciting1D, t_min=0, t_max=10,
+        "SEPP", simulate.SelfExciting1D, [0, 10],
         plot_title=r"$\lambda (t) = a + \sum_{k}\frac{b}{w} e^{-(t - t_{k})/w}$")
+
+def hom_2d() -> dbc.Row:
+    return dc.pp_example_row(
+        "Homogeneous", simulate.Homogeneous2D
+    )
 
 
 app.layout = html.Div(

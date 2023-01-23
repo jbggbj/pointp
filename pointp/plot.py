@@ -108,8 +108,8 @@ def point_process_fig_2D(
     xk: np.ndarray,
     yk: np.ndarray,
     intensity: Callable[[np.ndarray, np.ndarray], np.ndarray],
-    xbounds: tuple,
-    ybounds: tuple,
+    x_bounds: tuple,
+    y_bounds: tuple,
     plot_points=True,
     plot_intensity=True,
 ) -> go.Figure:
@@ -119,7 +119,7 @@ def point_process_fig_2D(
         fig.add_trace(points_plot_2D(xk, yk))
 
     if plot_intensity:
-        fig.add_trace(plot_contours(intensity, xbounds, ybounds))
+        fig.add_trace(plot_contours(intensity, x_bounds, y_bounds))
 
     return fig
 
