@@ -121,6 +121,8 @@ def point_process_fig_2D(
     if plot_intensity:
         fig.add_trace(plot_contours(intensity, x_bounds, y_bounds))
 
+    fig.update_xaxes(range=x_bounds)
+    fig.update_yaxes(range=y_bounds)
     return fig
 
 def points_plot_2D(xk: np.ndarray, yk: np.ndarray) -> go.Scatter:

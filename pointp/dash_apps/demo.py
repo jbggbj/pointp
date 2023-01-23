@@ -130,7 +130,13 @@ def sepp_example_row() -> dbc.Row:
 
 def hom_2d() -> dbc.Row:
     return dc.pp_example_row(
-        "Homogeneous", simulate.Homogeneous2D, [0, 1, 0, 1]
+        "Homogeneous", simulate.Homogeneous2D, [0, 2, 0, 1]
+    )
+
+
+def inhom_2d_a() -> dbc.Row:
+    return dc.pp_example_row(
+        "Inhom_2d_a", simulate.Inhomogeneous2DA, [0, 2, 0, 1]
     )
 
 
@@ -148,6 +154,8 @@ app.layout = html.Div(
                 # sepp_example_row(),
                 html.Hr(style={"height": "3px"}),
                 hom_2d(),
+                html.Hr(style={"height": "3px"}),
+                inhom_2d_a(),
             ],
             style={"height": "100vh"},
         )
