@@ -4,7 +4,8 @@ from abc import ABC
 
 import numpy as np
 from scipy import integrate, optimize
-from scipy.stats import poisson
+from scipy.stats import poisson, expon
+
 
 
 def poisson_process(
@@ -113,17 +114,49 @@ class InHomEx1(Process1D):
         self.a = a
         self.b = b
 
-    def intensity(self, t: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
-        scaler_input = np.isscalar(t)
-        if scaler_input:
-            t = np.array([t])
-
-        result = self.a * np.cos(self.b * 2 * np.pi * t) ** 2
-        if scaler_input:
-            result = result[0]
-
-        return result
+    def intensity(self, t: np.ndarray) -> np.ndarray:
+        return self.a * np.cos(self.b * 2 * np.pi * t) ** 2
 
     def simulate(self, t_min: float, t_max: float) -> np.ndarray:
         """Return points for inhomogeneous point process."""
         return poisson_process(self.intensity, t_min, t_max, f_max=self.a)
+
+
+class InHomEx2(Process1D):
+    model_parameters = [ModelParameter("a", 0, 10), ModelParameter("k", 0.01, 10)]
+
+    def __init__(self, a: float, k: float):
+        self.a = a
+        self.k = k
+
+    def intensity(self, t: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+        return (self.a / self.k) * np.exp(-t/self.k)
+
+    def simulate(self, t_min: float, t_max: float) -> np.ndarray:
+        """Return points for inhomogeneous point process."""
+        num_pts = poisson(self.a).rvs()
+        all_tk = expon(scale=self.k).rvs(size=num_pts)
+        return np.sort(all_tk[all_tk <= t_max])
+
+
+# class SelfExciting1D(Process1D):
+#     model_parameters = [
+#         ModelParameter("a", 0, 5),
+#         ModelParameter("b", 0, 2),
+#         ModelParameter("w", 0, 5),
+#     ]
+#
+#     tk = None
+#
+#     def __init__(self, a: float, b: float, w: float):
+#         self.background = Homogeneous1D(a)
+#         self.trigger = InHomEx2(b, w)
+
+    # def intensity(self, t: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+
+
+    # def simulate(self, t_min: float, t_max: float) -> np.ndarray:
+
+
+
+
