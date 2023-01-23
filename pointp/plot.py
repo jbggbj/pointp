@@ -8,17 +8,18 @@ from tools import pp_to_counts
 
 class Defaults:
     bin_opacity = 0.65
-    bargap = 0.
+    bargap = 0.0
 
 
 colors = dh.categoricalColorScheme
+# colors =["black", "gray", "forestgreen", "#4F94CD"]
 
 
 class DefaultColors:
-    points = colors[0]
-    counts = colors[2]
-    intensity = colors[4]
-    bins = colors[6]
+    points = "black"
+    counts = "gray"
+    intensity = "#228B22"
+    bins = "#4F94CD"
 
 
 def intensity_function_scatter(
@@ -33,7 +34,9 @@ def intensity_function_scatter(
     else:
         y = intensity(x)
 
-    return go.Scatter(x=x, y=y, mode="lines", name="intensity")
+    return go.Scatter(
+        x=x, y=y, mode="lines", name="intensity", line_color="#228B22", line_width=3
+    )
 
 
 def counts_function_scatter(tk: np.ndarray, t_max: float) -> go.Scatter:

@@ -65,7 +65,7 @@ def pp_example_row(
                                    n_bins=n_bins)
         fig.update_layout(
             title={
-                "text": "Homogeneous Poisson Process",
+                "text": name,
                 "y": 0.9,
                 "x": 0.5,
                 "xanchor": "center",
