@@ -7,7 +7,6 @@ from scipy import integrate, optimize
 from scipy.stats import poisson, expon
 
 
-
 def poisson_process(
     rate: Callable[[float], float],
     t_min: float,
@@ -123,39 +122,57 @@ class InHomEx1(Process1D):
 
 
 class InHomEx2(Process1D):
-    model_parameters = [ModelParameter("a", 0, 10), ModelParameter("k", 0.01, 10)]
+    model_parameters = [ModelParameter("a", 0, 10), ModelParameter("w", 0.01, 10)]
 
-    def __init__(self, a: float, k: float):
+    def __init__(self, a: float, w: float):
         self.a = a
-        self.k = k
+        self.w = w
 
     def intensity(self, t: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
-        return (self.a / self.k) * np.exp(-t/self.k)
+        return (self.a / self.w) * np.exp(-t/self.w)
 
     def simulate(self, t_min: float, t_max: float) -> np.ndarray:
         """Return points for inhomogeneous point process."""
         num_pts = poisson(self.a).rvs()
-        all_tk = expon(scale=self.k).rvs(size=num_pts)
+        all_tk = expon(scale=self.w).rvs(size=num_pts)
         return np.sort(all_tk[all_tk <= t_max])
 
 
-# class SelfExciting1D(Process1D):
-#     model_parameters = [
-#         ModelParameter("a", 0, 5),
-#         ModelParameter("b", 0, 2),
-#         ModelParameter("w", 0, 5),
-#     ]
-#
-#     tk = None
-#
-#     def __init__(self, a: float, b: float, w: float):
-#         self.background = Homogeneous1D(a)
-#         self.trigger = InHomEx2(b, w)
+class SelfExciting1D(Process1D):
+    model_parameters = [
+        ModelParameter("a", 0, 5),
+        ModelParameter("b", 0, 1.2),
+        ModelParameter("w", 0, 5),
+    ]
 
-    # def intensity(self, t: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+    event_times = None
+
+    def __init__(self, a: float, b: float, w: float):
+        self.background = Homogeneous1D(a)
+        self.trigger = InHomEx2(b, w)
+
+    def intensity(self, t: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+
+        result = self.background.intensity(t)
+        for tk in self.event_times:
+            delay = t - tk
+            result[delay >= 0] += self.trigger.intensity(delay[delay >= 0])
+        return result
+
+    def simulate(self, t_min: float, t_max: float) -> np.ndarray:
+        self.event_times = self.background.simulate(t_min, t_max)
+        to_trigger = self.event_times.tolist()
+        while len(to_trigger) > 0:
+            parent_time = to_trigger.pop()
+            children_times = parent_time + self.trigger.simulate(0, t_max-parent_time)
+            self.event_times = np.append(self.event_times, children_times)
+            to_trigger = to_trigger + children_times.tolist()
+
+        self.event_times = np.sort(self.event_times)
+        return self.event_times
 
 
-    # def simulate(self, t_min: float, t_max: float) -> np.ndarray:
+
 
 
 

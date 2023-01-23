@@ -17,7 +17,7 @@ colors = dh.categoricalColorScheme
 
 class DefaultColors:
     points = "black"
-    counts = "gray"
+    counts = "#CCCCCC"
     intensity = "#228B22"
     bins = "#4F94CD"
 
@@ -96,6 +96,6 @@ def point_process_figure(
     if plot_bins:
         fig.add_trace(bins_plot(tk, t_max, n_bins))
         fig.update_layout(bargap=Defaults.bargap)
-
+    fig.update_layout(uirevision="True")
     fig.update_xaxes(range=[0, t_max])
     return fig

@@ -11,8 +11,20 @@ import numpy as np
 from pointp.simulate import ModelParameter
 
 def pp_example_row(
-    name: str, process: "simulate.Process1D", t_min=0, t_max=1
+    name: str, process: "simulate.Process1D", t_min=0, t_max=1, plot_title: str = None
 ) -> dbc.Row:
+    """
+
+    :param name: Used for creating component IDs. Used as plot title by default.
+    :param process:
+    :param t_min:
+    :param t_max:
+    :param plot_title: Use this if you want to have plot title include latex formula
+    that uses '{'
+    :return:
+    """
+    if not plot_title:
+        plot_title = name
     example_tk = np.ndarray([])
     example_process = None
     parameters = process.model_parameters
@@ -35,7 +47,7 @@ def pp_example_row(
     )
     example_row = dh.my_row(
         [
-            dh.my_col([dcc.Graph(id=fig_id)], width=9),
+            dh.my_col([dcc.Graph(id=fig_id, mathjax=True)], width=9),
             dh.my_col(
                 slider_rows + [button_row, nbins_row],
                 width=3,
@@ -65,12 +77,12 @@ def pp_example_row(
                                    n_bins=n_bins)
         fig.update_layout(
             title={
-                "text": name,
+                "text": plot_title,
                 "y": 0.9,
                 "x": 0.5,
                 "xanchor": "center",
                 "yanchor": "top",
-            }
+            },
         )
         return fig
 
