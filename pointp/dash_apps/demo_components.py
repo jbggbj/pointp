@@ -26,7 +26,7 @@ def pp_example_row(
     """
     if not plot_title:
         plot_title = name
-    example_tk = np.ndarray([])
+    pts = np.ndarray([])
     example_process = None
     parameters = process.model_parameters
     fig_id = dh.component_id(name, "fig")
@@ -66,15 +66,15 @@ def pp_example_row(
     # Create callbacks
     @callback(*(standard_for_callback + model_parameter_inputs))
     def update_fig(n_clicks: int, n_bins: int, *mparams) -> go.Figure:
-        global example_tk
-        global example_process
+        nonlocal pts
+        nonlocal example_process
         if ctx.triggered_id != bin_slider_id:
             example_process = process(*mparams)
-            example_tk = example_process.simulate(*bounds)
+            pts = example_process.simulate(*bounds)
         # fig = example_process.plot_func(
-        #     example_tk, example_process.intensity, t_max, n_bins=n_bins
+        #     pts, example_process.intensity, t_max, n_bins=n_bins
         # )
-        fig = example_process.plot_func(example_tk, bounds[1], n_bins=n_bins)
+        fig = example_process.plot_func(pts, bounds, n_bins=n_bins)
         fig.update_layout(
             title={
                 "text": plot_title,

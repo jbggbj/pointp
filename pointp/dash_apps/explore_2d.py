@@ -1,7 +1,7 @@
 from typing import Callable
 import numpy as np
 from scipy import optimize
-
+from pointp.plot import point_process_fig_2D
 import plotly.graph_objs as go
 import plotly.express as px
 import pandas as pd
@@ -57,55 +57,55 @@ df = pd.DataFrame(data={"x": xy[0, :], "y": xy[1, :]})
 # fig = px.scatter(df, x="x", y="y")
 
 
-def points_plot_2D(xk: np.ndarray, yk: np.ndarray) -> go.Scatter:
-
-    return go.Scatter(
-        x=xk,
-        y=yk,
-        mode="markers",
-        name="points",
-        marker_size=15,
-        marker_color="black",
-    )
-
-
-def point_process_fig_2D(
-    xk: np.ndarray,
-    yk: np.ndarray,
-    intensity: Callable[[np.ndarray, np.ndarray], np.ndarray],
-    xbounds: tuple,
-    ybounds: tuple,
-    plot_points=True,
-    plot_intensity=True,
-) -> go.Figure:
-    fig = go.Figure()
-
-    if plot_points:
-        fig.add_trace(points_plot_2D(xk, yk))
-
-    if plot_intensity:
-        fig.add_trace(plot_contours(intensity, xbounds, ybounds))
-
-    return fig
-
-
-def plot_contours(
-    intensity: Callable[[np.ndarray, np.ndarray], np.ndarray],
-    xbounds: tuple,
-    ybounds: tuple,
-) -> go.Contour:
-    x = np.linspace(xbounds[0], xbounds[1], 200)
-    y = np.linspace(ybounds[0], ybounds[1], 200)
-    X, Y = np.meshgrid(x, y)
-    Z = intensity(X, Y)
-
-    return go.Contour(
-        z=Z,
-        x=x,
-        y=y
-    )
-
+# def points_plot_2D(xk: np.ndarray, yk: np.ndarray) -> go.Scatter:
 #
+#     return go.Scatter(
+#         x=xk,
+#         y=yk,
+#         mode="markers",
+#         name="points",
+#         marker_size=15,
+#         marker_color="black",
+#     )
+#
+#
+# def point_process_fig_2D(
+#     xk: np.ndarray,
+#     yk: np.ndarray,
+#     intensity: Callable[[np.ndarray, np.ndarray], np.ndarray],
+#     xbounds: tuple,
+#     ybounds: tuple,
+#     plot_points=True,
+#     plot_intensity=True,
+# ) -> go.Figure:
+#     fig = go.Figure()
+#
+#     if plot_points:
+#         fig.add_trace(points_plot_2D(xk, yk))
+#
+#     if plot_intensity:
+#         fig.add_trace(plot_contours(intensity, xbounds, ybounds))
+#
+#     return fig
+#
+#
+# def plot_contours(
+#     intensity: Callable[[np.ndarray, np.ndarray], np.ndarray],
+#     xbounds: tuple,
+#     ybounds: tuple,
+# ) -> go.Contour:
+#     x = np.linspace(xbounds[0], xbounds[1], 200)
+#     y = np.linspace(ybounds[0], ybounds[1], 200)
+#     X, Y = np.meshgrid(x, y)
+#     Z = intensity(X, Y)
+#
+#     return go.Contour(
+#         z=Z,
+#         x=x,
+#         y=y
+#     )
+#
+# #
 # x = np.linspace(0, 1, 100)
 # y = np.linspace(0, 1, 100)
 # X, Y = np.meshgrid(x, y)
@@ -113,6 +113,6 @@ def plot_contours(
 # fig = go.Figure(data=go.Contour(z=Z, x=x, y=y))
 # fig.add_trace(points_plot_2D(xy[0, :], xy[1, :]))
 # fig.show()
-fig = point_process_fig_2D(xy[0, :], xy[1, :], func2, (0, 1), (0, 1))
+fig = point_process_fig_2D(xy[0, :], xy[1, :], func2, [0, 1, 0, 1])
 fig.show()
 

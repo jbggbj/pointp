@@ -130,7 +130,7 @@ def sepp_example_row() -> dbc.Row:
 
 def hom_2d() -> dbc.Row:
     return dc.pp_example_row(
-        "Homogeneous", simulate.Homogeneous2D
+        "Homogeneous", simulate.Homogeneous2D, [0, 1, 0, 1]
     )
 
 
@@ -139,14 +139,15 @@ app.layout = html.Div(
         dbc.Container(
             [
                 dh.header("Point Processes"),
-                example_1_row(),
-                html.Hr(style={"height": "3px"}),
-                # homogeneous_example(),
-                example_2_row(),
-                html.Hr(style={"height": "3px"}),
+                # example_1_row(),
+                # html.Hr(style={"height": "3px"}),
+                # example_2_row(),
+                # html.Hr(style={"height": "3px"}),
                 example_3_row(),
+                # html.Hr(style={"height": "3px"}),
+                # sepp_example_row(),
                 html.Hr(style={"height": "3px"}),
-                sepp_example_row(),
+                hom_2d(),
             ],
             style={"height": "100vh"},
         )

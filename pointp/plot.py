@@ -78,7 +78,7 @@ def points_plot(tk: np.ndarray) -> go.Scatter:
 def point_process_figure(
     tk: np.ndarray,
     intensity: Union[float, Callable[[float], float]],
-    t_max: float,
+    bounds: float,
     n_bins: int = 10,
     plot_points=True,
     plot_intensity=True,
@@ -86,34 +86,34 @@ def point_process_figure(
     plot_bins=True,
 ) -> go.Figure:
     fig = go.Figure()
-
+    t_min, t_max = bounds[0], bounds[1]
     if plot_points:
         fig.add_trace(points_plot(tk))
     if plot_intensity:
-        fig.add_trace(intensity_function_scatter(intensity, 0, t_max))
+        fig.add_trace(intensity_function_scatter(intensity, t_min, t_max))
     if plot_counts:
         fig.add_trace(counts_function_scatter(tk, t_max))
     if plot_bins:
         fig.add_trace(bins_plot(tk, t_max, n_bins))
         fig.update_layout(bargap=Defaults.bargap)
     fig.update_layout(uirevision="True")
-    fig.update_xaxes(range=[0, t_max])
+    fig.update_xaxes(range=[t_min, t_max])
     return fig
-
-
-
 
 
 def point_process_fig_2D(
     xk: np.ndarray,
     yk: np.ndarray,
     intensity: Callable[[np.ndarray, np.ndarray], np.ndarray],
-    x_bounds: tuple,
-    y_bounds: tuple,
+    bounds: list,
     plot_points=True,
     plot_intensity=True,
+    **kwargs
 ) -> go.Figure:
     fig = go.Figure()
+
+    x_bounds = bounds[:2]
+    y_bounds = bounds[2:]
 
     if plot_points:
         fig.add_trace(points_plot_2D(xk, yk))
