@@ -12,10 +12,14 @@ fig = go.Figure(
         #                   method="animate",
         #                   args=[None])])]
     ),
-    frames=[go.Frame(data=[go.Scatter(x=[1, 2], y=[1, 2])]),
-            go.Frame(data=[go.Scatter(x=[1, 4], y=[1, 4])]),
-            go.Frame(data=[go.Scatter(x=[3, 4], y=[3, 4])],
-                     layout=go.Layout(title_text="End Title"))]
+    frames=[
+        go.Frame(data=[go.Scatter(x=[1, 2], y=[1, 2])]),
+        go.Frame(data=[go.Scatter(x=[1, 4], y=[1, 4])]),
+        go.Frame(
+            data=[go.Scatter(x=[3, 4], y=[3, 4])],
+            layout=go.Layout(title_text="End Title"),
+        ),
+    ],
 )
 
 fig.write_html("test.html")

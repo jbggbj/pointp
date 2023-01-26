@@ -1,8 +1,9 @@
-import numpy as np
+from typing import Callable, Union
 
+import numpy as np
 import plotly.graph_objs as go
+
 import pointp.dash_apps.dash_helper as dh
-from typing import Union, Callable
 from pointp.tools import pp_to_counts
 
 
@@ -137,6 +138,7 @@ def points_plot_2D(xk: np.ndarray, yk: np.ndarray) -> go.Scatter:
         marker_color="black",
     )
 
+
 def plot_contours(
     intensity: Callable[[np.ndarray, np.ndarray], np.ndarray],
     xbounds: tuple,
@@ -147,8 +149,4 @@ def plot_contours(
     X, Y = np.meshgrid(x, y)
     Z = intensity(X, Y)
 
-    return go.Contour(
-        z=Z,
-        x=x,
-        y=y
-    )
+    return go.Contour(z=Z, x=x, y=y)

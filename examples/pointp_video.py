@@ -1,8 +1,10 @@
-from pointp import simulate, plot
-import plotly.io as pio
-import plotly.graph_objs as go
-import numpy as np
 import math
+
+import numpy as np
+import plotly.graph_objs as go
+import plotly.io as pio
+
+from pointp import plot, simulate
 
 pio.templates.default = "simple_white"
 t_min, t_max = 0, 10

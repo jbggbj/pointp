@@ -1,10 +1,12 @@
 from typing import Callable
+
 import numpy as np
-from scipy import optimize
-from pointp.plot import point_process_fig_2D
-import plotly.graph_objs as go
-import plotly.express as px
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objs as go
+from scipy import optimize
+
+from pointp.plot import point_process_fig_2D
 
 
 def rejection_sampling_2D(
@@ -115,4 +117,3 @@ df = pd.DataFrame(data={"x": xy[0, :], "y": xy[1, :]})
 # fig.show()
 fig = point_process_fig_2D(xy[0, :], xy[1, :], func2, [0, 1, 0, 1])
 fig.show()
-

@@ -2,8 +2,7 @@ import webbrowser
 
 import dash_bootstrap_components as dbc
 import plotly.io as pio
-from dash import Dash, Input, Output, ctx, dcc, html, callback
-from jupyter_dash import JupyterDash
+from dash import Dash, Input, Output, callback, dcc, html
 
 import pointp.dash_apps.dash_helper as dh
 import pointp.dash_apps.demo_components as dc
@@ -81,8 +80,7 @@ example_list = [
     (ExampleIDs.ex3, example_3_row()),
     (ExampleIDs.ex4, hom_2d()),
     (ExampleIDs.ex5, inhom_2d_a()),
-    (ExampleIDs.ex6, sepp_example_row())
-
+    (ExampleIDs.ex6, sepp_example_row()),
 ]
 line_break = html.Hr(style={"height": "3px"})
 
@@ -121,13 +119,6 @@ def layout() -> html.Div:
             ),
         ]
     )
-
-
-def j_main(port=8050):
-    global app
-    app = JupyterDash(__name__)
-    app.layout = layout()
-    app.run_server(mode="jupyterlab", host="127.0.0.1", port=port)
 
 
 def main():

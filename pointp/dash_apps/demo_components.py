@@ -1,13 +1,14 @@
 from collections import namedtuple
+from typing import Callable, List
+
 import dash_bootstrap_components as dbc
-import pointp.dash_apps.dash_helper as dh
-from dash import callback, Input, Output, dcc, ctx
-from typing import List, Callable
+import numpy as np
 import plotly.graph_objs as go
+from dash import Input, Output, callback, ctx, dcc
+
+import pointp.dash_apps.dash_helper as dh
 import pointp.simulate as ps
 from pointp.plot import point_process_figure
-import numpy as np
-
 from pointp.simulate import ModelParameter
 
 

@@ -1,10 +1,10 @@
 import os
 import signal
 from typing import Tuple, Union
-import numpy as np
 
 import dash.exceptions
 import dash_bootstrap_components as dbc
+import numpy as np
 from dash import Input, Output, callback, dcc, html
 
 DEFAULT_COLUMN_WIDTH = 5
