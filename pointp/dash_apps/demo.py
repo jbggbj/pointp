@@ -1,20 +1,13 @@
 import webbrowser
-from jupyter_dash import JupyterDash
+
 import dash_bootstrap_components as dbc
-import numpy as np
-
-import pointp.simulate as ps
-from pointp import simulate
-from pointp.plot import point_process_figure
-
-import plotly
-import plotly.express as px
 import plotly.io as pio
-import plotly.graph_objs as go
-from dash import Dash, Input, Output, dcc, html, ctx
+from dash import Dash, Input, Output, ctx, dcc, html
+from jupyter_dash import JupyterDash
+
 import pointp.dash_apps.dash_helper as dh
-from typing import Tuple, Union, Callable
 import pointp.dash_apps.demo_components as dc
+from pointp import simulate
 
 # Only use for testing! Will crash after any runtime warning.
 # np.seterr(all="raise")  # Raise exception for runtime warnings
@@ -67,39 +60,78 @@ def inhom_2d_a() -> dbc.Row:
     return dc.pp_example_row("Inhom_2d_a", simulate.Inhomogeneous2DA, [0, 2, 0, 1],
                              plot_title=r"$\lambda (x, y) = a \cos^2 (2b\pi x) + c \sin^2 (2d\pi y)$",)
 
-examples = [
-    example_1_row(),
-    html.Hr(style={"height": "3px"}),
-    example_2_row(),
-    html.Hr(style={"height": "3px"}),
-    example_3_row(),
-    html.Hr(style={"height": "3px"}),
-]
+# examples = [
+#     example_1_row(),
+#     html.Hr(style={"height": "3px"}),
+#     example_2_row(),
+#     html.Hr(style={"height": "3px"}),
+#     example_3_row(),
+#     html.Hr(style={"height": "3px"}),
+# ]
+
+class ExampleIDs:
+    ex1 = "Homogeneous"
+    ex2 = "Inhomogeneous 1"
+    ex3 = "Inhomogeneous 2"
+
+example_dict = {
+    ExampleIDs.ex1: [
+        example_1_row(),
+        html.Hr(style={"height": "3px"})
+    ],
+
+    ExampleIDs.ex2: [
+        example_2_row(),
+        html.Hr(style={"height": "3px"}),
+    ],
+
+    ExampleIDs.ex3: [
+        example_3_row(),
+        html.Hr(style={"height": "3px"}),
+    ]
+}
+
+def update_display(items: list) -> list:
+    result = [
+        dh.header("Point Processes"),
+        dh.my_row([dh.my_col(dcc.Checklist(
+            options=['Homogeneous', 'Inhomogeneous 1', 'Inhomogeneous 2'],
+            value=['Homogeneous'],
+            inline=True,
+            id="example_select"
+        ))]),
+    ]
+    for item in items:
+        result.extend(example_dict[item])
+    return result
+
 def layout() -> html.Div:
 
     return html.Div(
         [
             dbc.Container(
-                [
-                    dh.header("Point Processes"),
-                    dh.my_row([dh.my_col(dcc.RadioItems(
-                        options=['New York City', 'Montreal', 'San Francisco'],
-                        value='Montreal',
-                        inline=True
-                    ))]),
-                    *examples
-                    # example_1_row(),
-                    # html.Hr(style={"height": "3px"}),
-                    # example_2_row(),
-                    # html.Hr(style={"height": "3px"}),
-                    # example_3_row(),
-                    # html.Hr(style={"height": "3px"}),
-                    # sepp_example_row(),
-                    # html.Hr(style={"height": "3px"}),
-                    # hom_2d(),
-                    # html.Hr(style={"height": "3px"}),
-                    # inhom_2d_a(),
-                ],
+                update_display([ExampleIDs.ex1, ExampleIDs.ex3]),
+                # [
+                #     dh.header("Point Processes"),
+                #     dh.my_row([dh.my_col(dcc.Checklist(
+                #         options=['Homogeneous', 'Inhomogeneous 1', 'Inhomogeneous 2'],
+                #         value=['Homogeneous'],
+                #         inline=True,
+                #         id="example_select"
+                #     ))]),
+                #     *list.extend([val for val in example_dict.values()])
+                #     # example_1_row(),
+                #     # html.Hr(style={"height": "3px"}),
+                #     # example_2_row(),
+                #     # html.Hr(style={"height": "3px"}),
+                #     # example_3_row(),
+                #     # html.Hr(style={"height": "3px"}),
+                #     # sepp_example_row(),
+                #     # html.Hr(style={"height": "3px"}),
+                #     # hom_2d(),
+                #     # html.Hr(style={"height": "3px"}),
+                #     # inhom_2d_a(),
+                # ],
                 style={"height": "100vh"},
             )
         ]
