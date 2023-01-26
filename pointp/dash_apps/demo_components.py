@@ -1,6 +1,6 @@
 from collections import namedtuple
 import dash_bootstrap_components as dbc
-import dash_helper as dh
+import pointp.dash_apps.dash_helper as dh
 from dash import callback, Input, Output, dcc, ctx
 from typing import List, Callable
 import plotly.graph_objs as go
@@ -86,6 +86,6 @@ def pp_example_row(
         )
         return fig
 
-        return go.Figure()
+        # return go.Figure()
 
     return example_row

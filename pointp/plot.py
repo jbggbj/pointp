@@ -1,9 +1,9 @@
 import numpy as np
 
 import plotly.graph_objs as go
-import dash_apps.dash_helper as dh
+import pointp.dash_apps.dash_helper as dh
 from typing import Union, Callable
-from tools import pp_to_counts
+from pointp.tools import pp_to_counts
 
 
 class Defaults:
@@ -97,7 +97,7 @@ def point_process_figure(
         fig.add_trace(bins_plot(tk, t_max, n_bins))
         fig.update_layout(bargap=Defaults.bargap)
     fig.update_layout(uirevision="True")
-    fig.update_xaxes(range=[t_min, t_max])
+    fig.update_xaxes(range=[t_min, t_max], title="Time")
     return fig
 
 
@@ -121,9 +121,10 @@ def point_process_fig_2D(
     if plot_intensity:
         fig.add_trace(plot_contours(intensity, x_bounds, y_bounds))
 
-    fig.update_xaxes(range=x_bounds)
-    fig.update_yaxes(range=y_bounds)
+    fig.update_xaxes(range=x_bounds, title="x")
+    fig.update_yaxes(range=y_bounds, title="y")
     return fig
+
 
 def points_plot_2D(xk: np.ndarray, yk: np.ndarray) -> go.Scatter:
 

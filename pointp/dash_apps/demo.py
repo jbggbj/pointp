@@ -1,10 +1,10 @@
 import webbrowser
-
+from jupyter_dash import JupyterDash
 import dash_bootstrap_components as dbc
 import numpy as np
 
 import pointp.simulate as ps
-import simulate
+from pointp import simulate
 from pointp.plot import point_process_figure
 
 import plotly
@@ -12,96 +12,23 @@ import plotly.express as px
 import plotly.io as pio
 import plotly.graph_objs as go
 from dash import Dash, Input, Output, dcc, html, ctx
-import dash_helper as dh
+import pointp.dash_apps.dash_helper as dh
 from typing import Tuple, Union, Callable
-import demo_components as dc
+import pointp.dash_apps.demo_components as dc
 
 # Only use for testing! Will crash after any runtime warning.
 # np.seterr(all="raise")  # Raise exception for runtime warnings
 
 pio.templates.default = "simple_white"
 
-app = Dash(__name__)
-
-
-# class Defaults:
-#     h_rate_max = 5
-#     h_x_max = 5
-#     bin_opacity = 0.7
-#
-#
-# class ComponentIDs:
-#     h_fig = dh.component_id("homogeneous", "figure")
-#     h_rate = dh.component_id("homogeneous_rate", "slider")
-#     h_button = dh.component_id("homogeneous", "button")
-#     h_bins = dh.component_id("homogeneous", "n_bins")
-
-
-# h_example_tk = None
-#
-#
-# def homogeneous_example() -> dbc.Row:
-#     return dh.my_row(
-#         [
-#             dh.my_col([dcc.Graph(id=ComponentIDs.h_fig)], width=9),
-#             dh.my_col(
-#                 [
-#                     dh.my_row(
-#                         dbc.Col(
-#                             [
-#                                 dh.labeled_slider(
-#                                     0,
-#                                     Defaults.h_rate_max,
-#                                     "rate",
-#                                     id=ComponentIDs.h_rate,
-#                                 )
-#                             ]
-#                         )
-#                     ),
-#                     dh.my_row(
-#                         [dh.my_col(dbc.Button("Generate", id=ComponentIDs.h_button))]
-#                         # dbc.Button("Generate", id=ComponentIDs.h_button)
-#                     ),
-#                     dh.my_row(
-#                         dh.labeled_slider(
-#                             1, 20, "# of bins", step=1, id=ComponentIDs.h_bins
-#                         )
-#                     ),
-#                 ],
-#                 width=3,
-#                 align="center",
-#             ),
-#         ]
-#     )
-#
-#
-# @app.callback(
-#     Output(ComponentIDs.h_fig, "figure"),
-#     Input(ComponentIDs.h_button, "n_clicks"),
-#     Input(ComponentIDs.h_rate, "value"),
-#     Input(ComponentIDs.h_bins, "value"),
-# )
-# def update_hom_figure(n_clicks: int, rate: float, n_bins: int) -> go.Figure:
-#     global h_example_tk
-#     if ctx.triggered_id != ComponentIDs.h_bins:
-#         h_example_tk = ps.h_poisson_1d(rate, [0, Defaults.h_x_max])
-#
-#     fig = point_process_figure(h_example_tk, rate, Defaults.h_x_max, n_bins=n_bins)
-#     fig.update_layout(
-#         title={
-#             "text": "Homogeneous Poisson Process",
-#             "y": 0.9,
-#             "x": 0.5,
-#             "xanchor": "center",
-#             "yanchor": "top",
-#         }
-#     )
-#     return fig
-
+# app = Dash(__name__)
+app = None
 
 def example_1_row() -> dbc.Row:
     return dc.pp_example_row(
-        "Homogeneous Poisson Process", simulate.Homogeneous1D, [0, 10],
+        "Homogeneous Poisson Process",
+        simulate.Homogeneous1D,
+        [0, 10],
     )
 
 
@@ -125,46 +52,85 @@ def example_3_row() -> dbc.Row:
 
 def sepp_example_row() -> dbc.Row:
     return dc.pp_example_row(
-        "SEPP", simulate.SelfExciting1D, [0, 10],
-        plot_title=r"$\lambda (t) = a + \sum_{k}\frac{b}{w} e^{-(t - t_{k})/w}$")
+        "SEPP",
+        simulate.SelfExciting1D,
+        [0, 10],
+        plot_title=r"$\lambda (t) = a + \sum_{k}\frac{b}{w} e^{-(t - t_{k})/w}$",
+    )
+
 
 def hom_2d() -> dbc.Row:
-    return dc.pp_example_row(
-        "Homogeneous", simulate.Homogeneous2D, [0, 2, 0, 1]
-    )
+    return dc.pp_example_row("Homogeneous", simulate.Homogeneous2D, [0, 2, 0, 1])
 
 
 def inhom_2d_a() -> dbc.Row:
-    return dc.pp_example_row(
-        "Inhom_2d_a", simulate.Inhomogeneous2DA, [0, 2, 0, 1]
+    return dc.pp_example_row("Inhom_2d_a", simulate.Inhomogeneous2DA, [0, 2, 0, 1],
+                             plot_title=r"$\lambda (x, y) = a \cos^2 (2b\pi x) + c \sin^2 (2d\pi y)$",)
+
+examples = [
+    example_1_row(),
+    html.Hr(style={"height": "3px"}),
+    example_2_row(),
+    html.Hr(style={"height": "3px"}),
+    example_3_row(),
+    html.Hr(style={"height": "3px"}),
+]
+def layout() -> html.Div:
+
+    return html.Div(
+        [
+            dbc.Container(
+                [
+                    dh.header("Point Processes"),
+                    dh.my_row([dh.my_col(dcc.RadioItems(
+                        options=['New York City', 'Montreal', 'San Francisco'],
+                        value='Montreal',
+                        inline=True
+                    ))]),
+                    *examples
+                    # example_1_row(),
+                    # html.Hr(style={"height": "3px"}),
+                    # example_2_row(),
+                    # html.Hr(style={"height": "3px"}),
+                    # example_3_row(),
+                    # html.Hr(style={"height": "3px"}),
+                    # sepp_example_row(),
+                    # html.Hr(style={"height": "3px"}),
+                    # hom_2d(),
+                    # html.Hr(style={"height": "3px"}),
+                    # inhom_2d_a(),
+                ],
+                style={"height": "100vh"},
+            )
+        ]
     )
 
 
-app.layout = html.Div(
-    [
-        dbc.Container(
-            [
-                dh.header("Point Processes"),
-                # example_1_row(),
-                # html.Hr(style={"height": "3px"}),
-                # example_2_row(),
-                # html.Hr(style={"height": "3px"}),
-                example_3_row(),
-                # html.Hr(style={"height": "3px"}),
-                # sepp_example_row(),
-                html.Hr(style={"height": "3px"}),
-                hom_2d(),
-                html.Hr(style={"height": "3px"}),
-                inhom_2d_a(),
-            ],
-            style={"height": "100vh"},
-        )
-    ]
-)
+def j_main(port=8050):
+    global app
+    app = JupyterDash(__name__)
+    app.layout = layout()
+    app.run_server(mode="jupyterlab", host="127.0.0.1", port=port)
 
-if __name__ == "__main__":
+
+def main():
+    global app
+    app = Dash(__name__)
+    app.layout = layout()
+    webbrowser.open_new_tab("http://127.0.0.1:8050/")
+    app.run_server(host="0.0.0.0", port=8050, debug=False)
+
+
+def debug():
+    global app
+    app = Dash(__name__)
+    app.layout = layout()
     webbrowser.open_new_tab("http://127.0.0.1:8050/")
     app.run_server(host="127.0.0.1", port=8050, debug=True)
+
+
+if __name__ == "__main__":
+    debug()
 
 """Steps used to kill process if port is left running.
 sudo lsof -i -P -n | grep LISTEN
