@@ -2,7 +2,7 @@ import webbrowser
 
 import dash_bootstrap_components as dbc
 import plotly.io as pio
-from dash import Dash, Input, Output, ctx, dcc, html
+from dash import Dash, Input, Output, ctx, dcc, html, callback
 from jupyter_dash import JupyterDash
 
 import pointp.dash_apps.dash_helper as dh
@@ -16,6 +16,7 @@ pio.templates.default = "simple_white"
 
 # app = Dash(__name__)
 app = None
+
 
 def example_1_row() -> dbc.Row:
     return dc.pp_example_row(
@@ -57,83 +58,67 @@ def hom_2d() -> dbc.Row:
 
 
 def inhom_2d_a() -> dbc.Row:
-    return dc.pp_example_row("Inhom_2d_a", simulate.Inhomogeneous2DA, [0, 2, 0, 1],
-                             plot_title=r"$\lambda (x, y) = a \cos^2 (2b\pi x) + c \sin^2 (2d\pi y)$",)
+    return dc.pp_example_row(
+        "Inhom_2d_a",
+        simulate.Inhomogeneous2DA,
+        [0, 2, 0, 1],
+        plot_title=r"$\lambda (x, y) = a \cos^2 (2b\pi x) + c \sin^2 (2d\pi y)$",
+    )
 
-# examples = [
-#     example_1_row(),
-#     html.Hr(style={"height": "3px"}),
-#     example_2_row(),
-#     html.Hr(style={"height": "3px"}),
-#     example_3_row(),
-#     html.Hr(style={"height": "3px"}),
-# ]
 
 class ExampleIDs:
     ex1 = "Homogeneous"
     ex2 = "Inhomogeneous 1"
     ex3 = "Inhomogeneous 2"
+    ex4 = "Homogeneous 2D"
+    ex5 = "Inhomogeneous 2D"
+    ex6 = "SEPP"
 
-example_dict = {
-    ExampleIDs.ex1: [
-        example_1_row(),
-        html.Hr(style={"height": "3px"})
-    ],
 
-    ExampleIDs.ex2: [
-        example_2_row(),
-        html.Hr(style={"height": "3px"}),
-    ],
+example_list = [
+    (ExampleIDs.ex1, example_1_row()),
+    (ExampleIDs.ex2, example_2_row()),
+    (ExampleIDs.ex3, example_3_row()),
+    (ExampleIDs.ex4, hom_2d()),
+    (ExampleIDs.ex5, inhom_2d_a()),
+    (ExampleIDs.ex6, sepp_example_row())
 
-    ExampleIDs.ex3: [
-        example_3_row(),
-        html.Hr(style={"height": "3px"}),
-    ]
-}
+]
+line_break = html.Hr(style={"height": "3px"})
 
+example_dict = {item[0]: [item[1], line_break] for item in example_list}
+
+to_show_checklist = dcc.Dropdown(
+    [item[0] for item in example_list],
+    [example_list[0][0]],
+    multi=True,
+    id="example_select",
+)
+
+
+@callback(Output("basic_container", "children"), Input("example_select", "value"))
 def update_display(items: list) -> list:
-    result = [
-        dh.header("Point Processes"),
-        dh.my_row([dh.my_col(dcc.Checklist(
-            options=['Homogeneous', 'Inhomogeneous 1', 'Inhomogeneous 2'],
-            value=['Homogeneous'],
-            inline=True,
-            id="example_select"
-        ))]),
-    ]
+    result = []
     for item in items:
         result.extend(example_dict[item])
     return result
+
 
 def layout() -> html.Div:
 
     return html.Div(
         [
             dbc.Container(
-                update_display([ExampleIDs.ex1, ExampleIDs.ex3]),
-                # [
-                #     dh.header("Point Processes"),
-                #     dh.my_row([dh.my_col(dcc.Checklist(
-                #         options=['Homogeneous', 'Inhomogeneous 1', 'Inhomogeneous 2'],
-                #         value=['Homogeneous'],
-                #         inline=True,
-                #         id="example_select"
-                #     ))]),
-                #     *list.extend([val for val in example_dict.values()])
-                #     # example_1_row(),
-                #     # html.Hr(style={"height": "3px"}),
-                #     # example_2_row(),
-                #     # html.Hr(style={"height": "3px"}),
-                #     # example_3_row(),
-                #     # html.Hr(style={"height": "3px"}),
-                #     # sepp_example_row(),
-                #     # html.Hr(style={"height": "3px"}),
-                #     # hom_2d(),
-                #     # html.Hr(style={"height": "3px"}),
-                #     # inhom_2d_a(),
-                # ],
+                [
+                    dh.header("Point Processes"),
+                    # to_show_checklist
+                    dh.my_row([dh.my_col(to_show_checklist)]),
+                ]
+            ),
+            dbc.Container(
+                id="basic_container",
                 style={"height": "100vh"},
-            )
+            ),
         ]
     )
 
@@ -147,7 +132,7 @@ def j_main(port=8050):
 
 def main():
     global app
-    app = Dash(__name__)
+    app = Dash(__name__, suppress_callback_exceptions=True)
     app.layout = layout()
     webbrowser.open_new_tab("http://127.0.0.1:8050/")
     app.run_server(host="0.0.0.0", port=8050, debug=False)
@@ -155,7 +140,7 @@ def main():
 
 def debug():
     global app
-    app = Dash(__name__)
+    app = Dash(__name__, suppress_callback_exceptions=True)
     app.layout = layout()
     webbrowser.open_new_tab("http://127.0.0.1:8050/")
     app.run_server(host="127.0.0.1", port=8050, debug=True)
