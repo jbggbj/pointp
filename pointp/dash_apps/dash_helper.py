@@ -29,8 +29,19 @@ categoricalColorScheme = np.array(
 )
 
 
-def component_id(name: str, component: str) -> str:
-    return f"{name}_{component}"
+def unique_component_id_factory(first_id: int):
+    n = first_id
+
+    def unique_component_id(name: str, component: str) -> str:
+        nonlocal n
+        result = f"{n}_{name}_{component}"
+        n += 1
+        return result
+
+    return unique_component_id
+
+
+component_id = unique_component_id_factory(0)
 
 
 def my_col(*args, **kwargs) -> dbc.Col:
