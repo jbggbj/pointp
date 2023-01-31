@@ -144,3 +144,39 @@ def header(title: str) -> dbc.Row:
         justify="evenly",
         style={"height": "9%"},
     )
+
+
+def page_depending_on_checklist(example_list) -> html.Div:
+
+    line_break = html.Hr(style={"height": "3px"})
+
+    example_dict = {item[0]: [item[1], line_break] for item in example_list}
+
+    to_show_checklist = dcc.Dropdown(
+        [item[0] for item in example_list],
+        [example_list[0][0]],
+        multi=True,
+        id="example_select",
+    )
+
+
+    @callback(Output("basic_container", "children"), Input("example_select", "value"))
+    def update_display(items: list) -> list:
+        result = []
+        for item in items:
+            result.extend(example_dict[item])
+        return result
+
+    return html.Div(
+        [
+            dbc.Container(
+                [
+                    my_row([my_col(to_show_checklist)]),
+                ]
+            ),
+            dbc.Container(
+                id="basic_container",
+                style={"height": "100vh"},
+            ),
+        ]
+    )

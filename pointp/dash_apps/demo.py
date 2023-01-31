@@ -82,41 +82,18 @@ example_list = [
     (ExampleIDs.ex5, inhom_2d_a()),
     (ExampleIDs.ex6, sepp_example_row()),
 ]
-line_break = html.Hr(style={"height": "3px"})
 
-example_dict = {item[0]: [item[1], line_break] for item in example_list}
-
-to_show_checklist = dcc.Dropdown(
-    [item[0] for item in example_list],
-    [example_list[0][0]],
-    multi=True,
-    id="example_select",
-)
-
-
-@callback(Output("basic_container", "children"), Input("example_select", "value"))
-def update_display(items: list) -> list:
-    result = []
-    for item in items:
-        result.extend(example_dict[item])
-    return result
 
 
 def layout() -> html.Div:
-
     return html.Div(
         [
             dbc.Container(
                 [
-                    dh.header("Point Processes"),
-                    # to_show_checklist
-                    dh.my_row([dh.my_col(to_show_checklist)]),
+                    dh.header("Point Processes")
                 ]
             ),
-            dbc.Container(
-                id="basic_container",
-                style={"height": "100vh"},
-            ),
+            dh.page_depending_on_checklist(example_list)
         ]
     )
 
