@@ -6,7 +6,7 @@ from dash import Input, Output, callback, dcc, html
 import pointp.dash_apps.demo_components as dc
 from pointp.dash_apps import dash_helper as dh
 
-dash.register_page(__name__, order=1)
+dash.register_page(__name__)
 
 
 class PoissonDefaults:
@@ -33,7 +33,7 @@ def p_dist_ex_row() -> dbc.Row:
 
     @callback(Output(fig_id, "figure"), Input(slider_id, "value"))
     def update_fig(mean: float) -> go.Figure:
-        return dc.poisson_dist_fig(mean)
+        return dc.poisson_dist_fig(mean, min_x_max=15)
 
     return example_row
 

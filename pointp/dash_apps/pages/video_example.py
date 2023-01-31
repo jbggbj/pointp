@@ -11,7 +11,7 @@ import plotly.express as px
 from dash import Dash, Input, Output, dcc, html
 
 
-dash.register_page(__name__, order=3)
+dash.register_page(__name__)
 
 t_min, t_max = 0, 10
 process = simulate.Homogeneous1D(2)
