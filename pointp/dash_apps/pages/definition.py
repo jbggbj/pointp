@@ -27,4 +27,8 @@ inhom_ex_row = dc.pp_definition_row(
     [0, 10],
     plot_title=r"$\lambda (t) = a + \sum_{k}\frac{b}{w} e^{-(t - t_{k})/w}$",
 )
-layout = html.Div([dbc.Container([hom_ex_row, inhom_ex_row])])
+title_row = dh.my_row(
+    [html.Div([html.H1("Homogeneous Poisson Process",
+                       style={"textAlign": "center", "margin-top": "25px"})])]
+)
+layout = html.Div([dbc.Container([title_row, hom_ex_row, inhom_ex_row])])
