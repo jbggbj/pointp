@@ -91,4 +91,21 @@ def pp_example_row(
 
     return example_row
 
+def poisson_dist_fig(mean: float) -> go.Figure:
+    p_dist = poisson(mean)
 
+    x_bins = np.arange(p_dist.ppf(0.995) + 1)
+    fig = go.Figure(
+        data=go.Bar(name="Poisson", x=x_bins, y=p_dist.pmf(x_bins)),
+    )
+    fig.update_yaxes(range=[0, 1])
+    fig.add_vline(
+        x=mean,
+        annotation_text="mean",
+        line_color="black",
+        annotation_position="top",
+        opacity=1,
+        line_width=2.0,
+    )
+    fig.update_layout(title="Poisson Distribution")
+    return fig
