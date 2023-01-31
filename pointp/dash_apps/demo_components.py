@@ -5,12 +5,12 @@ import dash_bootstrap_components as dbc
 import numpy as np
 import plotly.graph_objs as go
 from dash import Input, Output, callback, ctx, dcc
-
+import plotly.express as px
 import pointp.dash_apps.dash_helper as dh
 import pointp.simulate as ps
 from pointp.plot import point_process_figure
 from pointp.simulate import ModelParameter
-
+from scipy.stats import poisson
 
 def pp_example_row(
     name: str, process: "simulate.Process1D", bounds: list, plot_title: str = None
@@ -90,3 +90,5 @@ def pp_example_row(
         # return go.Figure()
 
     return example_row
+
+

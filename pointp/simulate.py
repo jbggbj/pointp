@@ -167,6 +167,7 @@ class SelfExciting1D(Process1D):
     ]
 
     event_times = None
+    generation = None
 
     def __init__(self, a: float, b: float, w: float):
         self.background = Homogeneous1D(a)
@@ -180,16 +181,31 @@ class SelfExciting1D(Process1D):
             result[delay >= 0] += self.trigger.intensity(delay[delay >= 0])
         return result
 
-    def simulate(self, t_min: float, t_max: float) -> np.ndarray:
+    def simulate(self, t_min: float, t_max: float, return_generation: bool = False) -> np.ndarray:
         self.event_times = self.background.simulate(t_min, t_max)
         to_trigger = self.event_times.tolist()
+        self.generation = [1] * len(to_trigger)
+        to_trigger_gen = self.generation.copy()
         while len(to_trigger) > 0:
             parent_time = to_trigger.pop()
+            parent_gen = to_trigger_gen.pop()
             children_times = parent_time + self.trigger.simulate(0, t_max - parent_time)
+            children_gen = [parent_gen + 1] * len(children_times)
             self.event_times = np.append(self.event_times, children_times)
+            self.generation = self.generation + children_gen
             to_trigger = to_trigger + children_times.tolist()
+            to_trigger_gen = to_trigger_gen + children_gen
 
-        self.event_times = np.sort(self.event_times)
+        order_in_time = np.argsort(self.event_times)
+        self.event_times = self.event_times[order_in_time]
+        self.generation = np.array(self.generation)[order_in_time]
+        if return_generation:
+            return self.event_times, self.generation
+        else:
+            return self.event_times
+
+
+
         return self.event_times
 
 
