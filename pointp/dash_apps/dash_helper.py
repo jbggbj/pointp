@@ -31,11 +31,12 @@ categoricalColorScheme = np.array(
 
 def unique_component_id_factory(first_id: int):
     n = first_id
-
+    print("CONSTRUCTING ID FUNCTION")
     def unique_component_id(name: str, component: str) -> str:
         nonlocal n
-        result = f"{n}_{name}_{component}"
+        result = f"{n}_{name}_{component}_{n}"
         n += 1
+        print(result)
         return result
 
     return unique_component_id
@@ -151,16 +152,18 @@ def page_depending_on_checklist(example_list) -> html.Div:
     line_break = html.Hr(style={"height": "3px"})
 
     example_dict = {item[0]: [item[1], line_break] for item in example_list}
+    select_id = component_id("example_select", "checklist")
+    container_id = component_id("basic container", "container")
 
     to_show_checklist = dcc.Dropdown(
         [item[0] for item in example_list],
         [example_list[0][0]],
         multi=True,
-        id="example_select",
+        id=select_id,
     )
 
 
-    @callback(Output("basic_container", "children"), Input("example_select", "value"))
+    @callback(Output(container_id, "children"), Input(select_id, "value"))
     def update_display(items: list) -> list:
         result = []
         for item in items:
@@ -175,7 +178,7 @@ def page_depending_on_checklist(example_list) -> html.Div:
                 ]
             ),
             dbc.Container(
-                id="basic_container",
+                id=container_id,
                 style={"height": "100vh"},
             ),
         ]

@@ -3,14 +3,14 @@ import dash_bootstrap_components as dbc
 import plotly.io as pio
 from dash import Dash, html
 
-from pointp.dash_apps import dash_helper as dh
+from pointp.dash_apps.dash_helper import quit_button
 
 # Only use for testing! Will crash after any runtime warning.
 # np.seterr(all="raise")  # Raise exception for runtime warnings
 
 pio.templates.default = "simple_white"
 app = Dash(__name__, use_pages=True, suppress_callback_exceptions=True)
-APP_BRAND = "pointp demo"
+APP_BRAND = "Point Processes"
 
 dropdown = dbc.DropdownMenu(
     children=[
@@ -49,7 +49,7 @@ def Navbar():
                 #      dbc.NavLink(f"{page['name']}", href=page["relative_path"])
                 #  )for page in dash.page_registry.values()
                 # ],
-                children=[dropdown, dh.quit_button()],
+                children=[dropdown, quit_button()],
                 brand=APP_BRAND,
                 brand_href=dash.page_registry["pages.home"]["path"],
                 color="dark",
