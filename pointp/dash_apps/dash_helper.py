@@ -31,12 +31,10 @@ categoricalColorScheme = np.array(
 
 def unique_component_id_factory(first_id: int):
     n = first_id
-    print("CONSTRUCTING ID FUNCTION")
     def unique_component_id(name: str, component: str) -> str:
         nonlocal n
         result = f"{n}_{name}_{component}_{n}"
         n += 1
-        print(result)
         return result
 
     return unique_component_id

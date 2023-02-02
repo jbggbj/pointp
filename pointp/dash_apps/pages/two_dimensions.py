@@ -7,25 +7,26 @@ import pointp.dash_apps.demo_components as dc
 from pointp.dash_apps import dash_helper as dh
 from pointp import simulate
 
-dash.register_page(__name__, order=1)
+dash.register_page(__name__, order=3)
 
-hom_def_row = dc.pp_definition_row(
-    "Homogeneous Poisson Process", simulate.Homogeneous1D, [0, 10]
-)
+hom_2d_row = dc.pp_example_row("Homogeneous 2D", simulate.Homogeneous2D, [0, 2, 0, 1])
 
-hom_simulate_row = dc.pp_example_row(
-        "Homogeneous Poisson Process",
-        simulate.Homogeneous1D,
-        [0, 10],
+
+inhom_2d_row = dc.pp_example_row(
+        "Inhomogeneous 2D",
+        simulate.Inhomogeneous2DA,
+        [0, 2, 0, 1],
+        plot_title=r"$\lambda (x, y) = a \cos^2 (2b\pi x) + c \sin^2 (2d\pi y)$",
     )
 
+
 class ExampleIDs:
-    ex1 = "Homogeneous Definition"
-    ex2 = "Homogeneous Simulation"
+    ex1 = "Homogeneous 2D"
+    ex2 = "Inhomogeneous 2D"
 
 example_list = [
-    (ExampleIDs.ex1, hom_def_row),
-    (ExampleIDs.ex2, hom_simulate_row),
+    (ExampleIDs.ex1, hom_2d_row),
+    (ExampleIDs.ex2, inhom_2d_row),
 ]
 # inhom_ex_row = dc.pp_definition_row(
 #     "Inhomogeneous Poisson Process",
@@ -34,7 +35,7 @@ example_list = [
 #     plot_title=r"$\lambda (t) = a + \sum_{k}\frac{b}{w} e^{-(t - t_{k})/w}$",
 # )
 title_row = dh.my_row(
-    [html.Div([html.H1("Homogeneous Poisson Process in 1D",
+    [html.Div([html.H1("Poisson Process in 2D",
                        style={"textAlign": "center", "margin-top": "25px"})])]
 )
 layout = html.Div([dbc.Container([title_row]),

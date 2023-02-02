@@ -6,7 +6,7 @@ from dash import Input, Output, callback, dcc, html
 import pointp.dash_apps.demo_components as dc
 from pointp.dash_apps import dash_helper as dh
 
-dash.register_page(__name__)
+dash.register_page(__name__, order=0)
 
 
 class PoissonDefaults:

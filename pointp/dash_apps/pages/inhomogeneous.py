@@ -7,7 +7,7 @@ import pointp.dash_apps.demo_components as dc
 from pointp.dash_apps import dash_helper as dh
 from pointp import simulate
 
-dash.register_page(__name__)
+dash.register_page(__name__, order=2)
 
 inhom_def_row = dc.pp_definition_row(
     "Inhomogeneous Poisson Process",
