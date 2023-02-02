@@ -16,7 +16,8 @@ from scipy import integrate
 
 
 def pp_example_row(
-    name: str, process: "simulate.Process1D", bounds: list, plot_title: str = None
+    name: str, process: "simulate.Process1D", bounds: list, plot_title: str = None,
+        show_bins: bool = True
 ) -> dbc.Row:
     """
 
@@ -47,50 +48,76 @@ def pp_example_row(
     slider_rows = [dh.my_row(slider) for slider in sliders]
 
     button_row = dh.my_row([dh.my_col(dbc.Button("Generate", id=button_id))])
-    nbins_row = dh.my_row(
-        dh.labeled_slider(1, 20, "# of bins", step=1, id=bin_slider_id)
-    )
+    standard_controls = [button_row]
+
+    if show_bins:
+        nbins_row = dh.my_row(
+            dh.labeled_slider(1, 20, "# of bins", step=1, id=bin_slider_id)
+        )
+        standard_controls.append(nbins_row)
     example_row = dh.my_row(
         [
             dh.my_col([dcc.Graph(id=fig_id, mathjax=True)], width=9),
             dh.my_col(
-                slider_rows + [button_row, nbins_row],
+                slider_rows + standard_controls,
                 width=3,
                 align="center",
             ),
         ]
     )
 
-    standard_for_callback = [
-        Output(fig_id, "figure"),
-        Input(button_id, "n_clicks"),
-        Input(bin_slider_id, "value"),
-    ]
-    model_parameter_inputs = [Input(slider_ids[p.name], "value") for p in parameters]
-    # Create callbacks
-    @callback(*(standard_for_callback + model_parameter_inputs))
-    def update_fig(n_clicks: int, n_bins: int, *mparams) -> go.Figure:
-        nonlocal pts
-        nonlocal example_process
-        if ctx.triggered_id != bin_slider_id:
+    if show_bins:
+        standard_for_callback = [
+            Output(fig_id, "figure"),
+            Input(button_id, "n_clicks"),
+            Input(bin_slider_id, "value"),
+        ]
+        model_parameter_inputs = [Input(slider_ids[p.name], "value") for p in parameters]
+        # Create callbacks
+        @callback(*(standard_for_callback + model_parameter_inputs))
+        def update_fig(n_clicks: int, n_bins: int, *mparams) -> go.Figure:
+            nonlocal pts
+            nonlocal example_process
+            if ctx.triggered_id != bin_slider_id:
+                example_process = process(*mparams)
+                pts = example_process.simulate(*bounds)
+            fig = example_process.plot_func(pts, bounds, n_bins=n_bins)
+            fig.update_layout(
+                title={
+                    "text": plot_title,
+                    "y": 0.9,
+                    "x": 0.5,
+                    "xanchor": "center",
+                    "yanchor": "top",
+                },
+            )
+            return fig
+    else:
+        standard_for_callback = [
+            Output(fig_id, "figure"),
+            Input(button_id, "n_clicks"),
+        ]
+        model_parameter_inputs = [Input(slider_ids[p.name], "value") for p in
+                                  parameters]
+
+        # Create callbacks
+        @callback(*(standard_for_callback + model_parameter_inputs))
+        def update_fig(n_clicks: int, *mparams) -> go.Figure:
+            nonlocal pts
+            nonlocal example_process
             example_process = process(*mparams)
             pts = example_process.simulate(*bounds)
-        # fig = example_process.plot_func(
-        #     pts, example_process.intensity, t_max, n_bins=n_bins
-        # )
-        fig = example_process.plot_func(pts, bounds, n_bins=n_bins)
-        fig.update_layout(
-            title={
-                "text": plot_title,
-                "y": 0.9,
-                "x": 0.5,
-                "xanchor": "center",
-                "yanchor": "top",
-            },
-        )
-        return fig
-
-        # return go.Figure()
+            fig = example_process.plot_func(pts, bounds)
+            fig.update_layout(
+                title={
+                    "text": plot_title,
+                    "y": 0.9,
+                    "x": 0.5,
+                    "xanchor": "center",
+                    "yanchor": "top",
+                },
+            )
+            return fig
 
     return example_row
 
