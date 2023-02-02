@@ -1,23 +1,27 @@
+import math
 from collections import namedtuple
 from typing import Callable, List
 
 import dash_bootstrap_components as dbc
 import numpy as np
+import plotly.express as px
 import plotly.graph_objs as go
 from dash import Input, Output, callback, ctx, dcc, html
-import plotly.express as px
+from scipy import integrate
+from scipy.stats import poisson
+
 import pointp.dash_apps.dash_helper as dh
 import pointp.simulate as ps
-from pointp.plot import point_process_figure
 from pointp import simulate
-from scipy.stats import poisson
-import math
-from scipy import integrate
+from pointp.plot import point_process_figure
 
 
 def pp_example_row(
-    name: str, process: "simulate.Process1D", bounds: list, plot_title: str = None,
-        show_bins: bool = True
+    name: str,
+    process: "simulate.Process1D",
+    bounds: list,
+    plot_title: str = None,
+    show_bins: bool = True,
 ) -> dbc.Row:
     """
 
@@ -72,7 +76,9 @@ def pp_example_row(
             Input(button_id, "n_clicks"),
             Input(bin_slider_id, "value"),
         ]
-        model_parameter_inputs = [Input(slider_ids[p.name], "value") for p in parameters]
+        model_parameter_inputs = [
+            Input(slider_ids[p.name], "value") for p in parameters
+        ]
         # Create callbacks
         @callback(*(standard_for_callback + model_parameter_inputs))
         def update_fig(n_clicks: int, n_bins: int, *mparams) -> go.Figure:
@@ -92,13 +98,15 @@ def pp_example_row(
                 },
             )
             return fig
+
     else:
         standard_for_callback = [
             Output(fig_id, "figure"),
             Input(button_id, "n_clicks"),
         ]
-        model_parameter_inputs = [Input(slider_ids[p.name], "value") for p in
-                                  parameters]
+        model_parameter_inputs = [
+            Input(slider_ids[p.name], "value") for p in parameters
+        ]
 
         # Create callbacks
         @callback(*(standard_for_callback + model_parameter_inputs))
@@ -122,7 +130,9 @@ def pp_example_row(
     return example_row
 
 
-def poisson_dist_fig(mean: float, min_x_max: int = None) -> go.Figure:
+def poisson_dist_fig(
+    mean: float, min_x_max: int = None, annotation: str = "mean"
+) -> go.Figure:
     p_dist = poisson(mean)
 
     x_max = p_dist.ppf(0.999)
@@ -135,7 +145,7 @@ def poisson_dist_fig(mean: float, min_x_max: int = None) -> go.Figure:
     fig.update_yaxes(range=[0, 1])
     fig.add_vline(
         x=mean,
-        annotation_text="mean",
+        annotation_text=annotation,
         line_color="black",
         annotation_position="top",
         opacity=1,
@@ -147,7 +157,11 @@ def poisson_dist_fig(mean: float, min_x_max: int = None) -> go.Figure:
 
 
 def pp_definition_row(
-    name: str, process: "simulate.Process1D", bounds: list, plot_title: str = None
+    name: str,
+    process: "simulate.Process1D",
+    bounds: list,
+    plot_title: str = None,
+    y_max: float = None,
 ) -> dbc.Row:
 
     example_process = None
@@ -199,7 +213,10 @@ def pp_definition_row(
         fig.add_trace(
             go.Scatter(x=x2, y=y2, fill="toself", line={"width": 0}, mode="lines")
         )
-        fig.update_yaxes(range=[0, 1.05 * y.max()], title={"text": "Intensity"})
+        if y_max:
+            fig.update_yaxes(range=[0, y_max], title={"text": "Intensity"})
+        else:
+            fig.update_yaxes(range=[0, 1.05 * y.max()], title={"text": "Intensity"})
         fig.update_xaxes(range=bounds, title={"text": "Time"})
         fig.update_layout(showlegend=False)
         if plot_title:
@@ -228,9 +245,9 @@ def pp_definition_row(
         [dh.my_row(slider) for slider in intensity_sliders]
         + [html.Hr(style={"height": "6px"})]
         + [dh.my_row(interval_start_slider), dh.my_row(interval_length_slider)],
-                width=3,
-                align="center",
-            )
+        width=3,
+        align="center",
+    )
 
     example_row = dh.my_row(
         [
@@ -241,7 +258,7 @@ def pp_definition_row(
                 ],
                 width=9,
             ),
-            slider_col
+            slider_col,
         ]
     )
     return example_row

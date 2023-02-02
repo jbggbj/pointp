@@ -111,7 +111,7 @@ class Process1D(Process, ABC):
 
 
 class Homogeneous1D(Process1D):
-    model_parameters = [ModelParameter("rate", 0, 5)]
+    model_parameters = [ModelParameter("\u03BB", 0, 5)]
 
     def __init__(self, rate: float):
         self.rate = rate
@@ -162,7 +162,7 @@ class InHomEx2(Process1D):
 class SelfExciting1D(Process1D):
     model_parameters = [
         ModelParameter("a", 0, 5),
-        ModelParameter("b", 0, 1.2),
+        ModelParameter("b", 0, 1.3),
         ModelParameter("w", 0, 5),
     ]
 
@@ -181,7 +181,9 @@ class SelfExciting1D(Process1D):
             result[delay >= 0] += self.trigger.intensity(delay[delay >= 0])
         return result
 
-    def simulate(self, t_min: float, t_max: float, return_generation: bool = False) -> np.ndarray:
+    def simulate(
+        self, t_min: float, t_max: float, return_generation: bool = False
+    ) -> np.ndarray:
         self.event_times = self.background.simulate(t_min, t_max)
         to_trigger = self.event_times.tolist()
         self.generation = [1] * len(to_trigger)
@@ -203,8 +205,6 @@ class SelfExciting1D(Process1D):
             return self.event_times, self.generation
         else:
             return self.event_times
-
-
 
         return self.event_times
 

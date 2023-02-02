@@ -4,8 +4,8 @@ import plotly.graph_objs as go
 from dash import Input, Output, callback, dcc, html
 
 import pointp.dash_apps.demo_components as dc
-from pointp.dash_apps import dash_helper as dh
 from pointp import simulate
+from pointp.dash_apps import dash_helper as dh
 
 dash.register_page(__name__, order=3)
 

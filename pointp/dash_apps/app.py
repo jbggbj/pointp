@@ -18,11 +18,11 @@ dropdown = dbc.DropdownMenu(
     children=[
         dbc.DropdownMenuItem(f"{page['name']}", href=page["relative_path"])
         for page in dash.page_registry.values()
-        if not page["name"] in ["Home", "Quit"]
+        if not page["name"] in ["Quit"]
     ],
     nav=True,
     in_navbar=True,
-    label="Explore",
+    label="Examples",
 )
 
 
@@ -33,7 +33,7 @@ def Navbar():
             dbc.NavbarSimple(
                 children=[dropdown, quit_button()],
                 brand=APP_BRAND,
-                brand_href=dash.page_registry["pages.home"]["path"],
+                # brand_href=dash.page_registry["pages.home"]["path"],
                 color="dark",
                 dark=True,
             ),

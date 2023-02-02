@@ -4,8 +4,8 @@ import plotly.graph_objs as go
 from dash import Input, Output, callback, dcc, html
 
 import pointp.dash_apps.demo_components as dc
-from pointp.dash_apps import dash_helper as dh
 from pointp import simulate
+from pointp.dash_apps import dash_helper as dh
 
 dash.register_page(__name__)
 
@@ -28,7 +28,15 @@ inhom_ex_row = dc.pp_definition_row(
     plot_title=r"$\lambda (t) = a + \sum_{k}\frac{b}{w} e^{-(t - t_{k})/w}$",
 )
 title_row = dh.my_row(
-    [html.Div([html.H1("Homogeneous Poisson Process",
-                       style={"textAlign": "center", "margin-top": "25px"})])]
+    [
+        html.Div(
+            [
+                html.H1(
+                    "Homogeneous Poisson Process",
+                    style={"textAlign": "center", "margin-top": "25px"},
+                )
+            ]
+        )
+    ]
 )
 layout = html.Div([dbc.Container([title_row, hom_ex_row, inhom_ex_row])])

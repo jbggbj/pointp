@@ -31,6 +31,7 @@ categoricalColorScheme = np.array(
 
 def unique_component_id_factory(first_id: int):
     n = first_id
+
     def unique_component_id(name: str, component: str) -> str:
         nonlocal n
         result = f"{n}_{name}_{component}_{n}"
@@ -52,6 +53,16 @@ def my_col(*args, **kwargs) -> dbc.Col:
 def my_row(*args, **kwargs) -> dbc.Row:
     kwargs.setdefault("justify", "evenly")
     return dbc.Row(*args, **kwargs)
+
+
+def title_row(title: str) -> dbc.Row:
+    return my_row(
+        [
+            html.Div(
+                [html.H1(title, style={"textAlign": "center", "margin-top": "25px"})]
+            )
+        ]
+    )
 
 
 def labeled_slider(minimum: float, maximum: float, label: str, **kwargs) -> html.Div:
@@ -159,7 +170,6 @@ def page_depending_on_checklist(example_list) -> html.Div:
         multi=True,
         id=select_id,
     )
-
 
     @callback(Output(container_id, "children"), Input(select_id, "value"))
     def update_display(items: list) -> list:

@@ -4,8 +4,8 @@ import plotly.graph_objs as go
 from dash import Input, Output, callback, dcc, html
 
 import pointp.dash_apps.demo_components as dc
-from pointp.dash_apps import dash_helper as dh
 from pointp import simulate
+from pointp.dash_apps import dash_helper as dh
 
 dash.register_page(__name__, order=2)
 
@@ -17,26 +17,26 @@ inhom_def_row = dc.pp_definition_row(
 )
 
 inhom_periodic_row = dc.pp_example_row(
-        "Inhomogeneous Example: Periodic",
-        simulate.InHomEx1,
-        [0, 4],
-        plot_title=r"$\lambda (t) = a \cos{(2b\pi t)}$",
-    )
+    "Inhomogeneous Example: Periodic",
+    simulate.InHomEx1,
+    [0, 4],
+    plot_title=r"$\lambda (t) = a \cos{(2b\pi t)}$",
+)
 
 
 inhom_exponential_row = dc.pp_example_row(
-        "Inhomogeneous Example: Exponential",
-        simulate.InHomEx2,
-        [0, 10],
-        plot_title=r"$\lambda (t) = \frac{a}{w}e^{-t/w}$",
-    )
+    "Inhomogeneous Example: Exponential",
+    simulate.InHomEx2,
+    [0, 10],
+    plot_title=r"$\lambda (t) = \frac{a}{w}e^{-t/w}$",
+)
 
 
 hom_simulate_row = dc.pp_example_row(
-        "Homogeneous Poisson Process",
-        simulate.Homogeneous1D,
-        [0, 10],
-    )
+    "Homogeneous Poisson Process",
+    simulate.Homogeneous1D,
+    [0, 10],
+)
 
 
 class ExampleIDs:
@@ -49,12 +49,20 @@ example_list = [
     (ExampleIDs.ex1, inhom_def_row),
     (ExampleIDs.ex2, inhom_exponential_row),
     (ExampleIDs.ex3, inhom_periodic_row),
-
 ]
 
 title_row = dh.my_row(
-    [html.Div([html.H1("Inhomogeneous Poisson Process in 1D",
-                       style={"textAlign": "center", "margin-top": "25px"})])]
+    [
+        html.Div(
+            [
+                html.H1(
+                    "Inhomogeneous Poisson Process in 1D",
+                    style={"textAlign": "center", "margin-top": "25px"},
+                )
+            ]
+        )
+    ]
 )
-layout = html.Div([dbc.Container([title_row]),
-                   dh.page_depending_on_checklist(example_list)])
+layout = html.Div(
+    [dbc.Container([title_row]), dh.page_depending_on_checklist(example_list)]
+)

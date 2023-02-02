@@ -84,16 +84,11 @@ example_list = [
 ]
 
 
-
 def layout() -> html.Div:
     return html.Div(
         [
-            dbc.Container(
-                [
-                    dh.header("Point Processes")
-                ]
-            ),
-            dh.page_depending_on_checklist(example_list)
+            dbc.Container([dh.header("Point Processes")]),
+            dh.page_depending_on_checklist(example_list),
         ]
     )
 

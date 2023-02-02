@@ -1,15 +1,16 @@
-import webbrowser
-import plotly.io as pio
-import plotly.graph_objs as go
-from pointp import simulate
-import dash_bootstrap_components as dbc
 import math
-import numpy as np
+import webbrowser
+
 import dash
+import dash_bootstrap_components as dbc
+import numpy as np
 import plotly
 import plotly.express as px
+import plotly.graph_objs as go
+import plotly.io as pio
 from dash import Dash, Input, Output, dcc, html
 
+from pointp import simulate
 
 dash.register_page(__name__)
 
@@ -66,11 +67,7 @@ fig = go.Figure(
     frames=frames,
     # frames=[go.Frame(data=[plot.points_plot(tk[tk <= t])]) for t in t_frame[1:]]
 )
-layout = html.Div(
-    [
-        dcc.Graph(figure=fig)
-    ]
-)
+layout = html.Div([dcc.Graph(figure=fig)])
 
 # if __name__ == "__main__":
 #     webbrowser.open_new_tab("http://127.0.0.1:8050/")
