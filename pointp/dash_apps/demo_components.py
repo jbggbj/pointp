@@ -16,6 +16,19 @@ from pointp import simulate
 from pointp.plot import point_process_figure
 
 
+def process_sliders(process: ps.Process, name: str) -> tuple[dict, dict]:
+    """Return slider_ids, sliders"""
+    slider_ids = {
+        p.name: dh.component_id(f"{name}_{p.name}", "slider")
+        for p in process.model_parameters
+    }
+    sliders = [
+        dh.labeled_slider(p.min, p.max, p.name, id=slider_ids[p.name])
+        for p in process.model_parameters
+    ]
+
+    return slider_ids, sliders
+
 def pp_example_row(
     name: str,
     process: "simulate.Process1D",
@@ -42,13 +55,14 @@ def pp_example_row(
     button_id = dh.component_id(name, "button")
     bin_slider_id = dh.component_id(name + "_bins", "slider")
 
-    slider_ids = {
-        p.name: dh.component_id(f"{name}_{p.name}", "slider") for p in parameters
-    }
-    sliders = [
-        dh.labeled_slider(p.min, p.max, p.name, id=slider_ids[p.name])
-        for p in parameters
-    ]
+    # slider_ids = {
+    #     p.name: dh.component_id(f"{name}_{p.name}", "slider") for p in parameters
+    # }
+    # sliders = [
+    #     dh.labeled_slider(p.min, p.max, p.name, id=slider_ids[p.name])
+    #     for p in parameters
+    # ]
+    slider_ids, sliders = process_sliders(process, name)
     slider_rows = [dh.my_row(slider) for slider in sliders]
 
     button_row = dh.my_row([dh.my_col(dbc.Button("Generate", id=button_id))])
@@ -262,3 +276,23 @@ def pp_definition_row(
         ]
     )
     return example_row
+
+
+def sepp_example_row(
+    name: str,
+    process: "simulate.Process1D",
+    bounds: list,
+    background_plot_title: str = None,
+    trigger_plot_title: str = None,
+    points_plot_title: str = None,
+) -> dbc.Row:
+    pts = np.ndarray([])
+    generations = np.ndarray([])
+    example_process = None
+
+    background_parameters = process.background.model_parameters
+    trigger_parameters = process.trigger.model_parameters
+    figures = ["background", "trigger", "process"]
+    fig_ids = {dh.component_id(f"{name} {f}", "fig") for f in figures}
+
+    pass

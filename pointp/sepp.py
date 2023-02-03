@@ -85,6 +85,8 @@ def sepp_class_1d(
         model_parameters = (
             background_class.model_parameters + trigger_class.model_parameters
         )
+        background = background_class
+        trigger = trigger_class
 
         def __init__(self, *args):
             self.background = background_class(
