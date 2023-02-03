@@ -121,8 +121,10 @@ def sepp_figure(
         else:
             assert len(generation) == len(tk)
             gen_no = np.sort(np.unique(generation))
-            colors = px.colors.sample_colorscale(sepp_color_scale, len(gen_no))
-
+            if len(gen_no) > 1:
+                colors = px.colors.sample_colorscale(sepp_color_scale, len(gen_no))
+            else:
+                colors = [DefaultColors.points]
             for k, color in zip(gen_no, colors):
                 fig.add_trace(
                     points_plot(
