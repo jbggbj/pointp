@@ -31,6 +31,16 @@ def process_sliders(process: ps.Process, name: str) -> tuple[dict, dict]:
     return slider_ids, sliders
 
 
+def styled_plot_title(text: str) -> dict:
+    return {
+        "text": text,
+        "y": 0.9,
+        "x": 0.5,
+        "xanchor": "center",
+        "yanchor": "top",
+    }
+
+
 def pp_example_row(
     name: str,
     process: "simulate.Process1D",
@@ -49,7 +59,7 @@ def pp_example_row(
     :return:
     """
     if not plot_title:
-        plot_title = name
+        plot_title = process.latex_string
     pts = np.ndarray([])
     example_process = None
     parameters = process.model_parameters
@@ -97,15 +107,8 @@ def pp_example_row(
                 example_process = process(*mparams)
                 pts = example_process.simulate(*bounds)
             fig = example_process.plot_func(pts, bounds, n_bins=n_bins)
-            fig.update_layout(
-                title={
-                    "text": plot_title,
-                    "y": 0.9,
-                    "x": 0.5,
-                    "xanchor": "center",
-                    "yanchor": "top",
-                },
-            )
+
+            fig.update_layout(title=styled_plot_title(plot_title))
             return fig
 
     else:
@@ -125,15 +128,9 @@ def pp_example_row(
             example_process = process(*mparams)
             pts = example_process.simulate(*bounds)
             fig = example_process.plot_func(pts, bounds)
-            fig.update_layout(
-                title={
-                    "text": plot_title,
-                    "y": 0.9,
-                    "x": 0.5,
-                    "xanchor": "center",
-                    "yanchor": "top",
-                },
-            )
+
+            fig.update_layout(title=styled_plot_title(plot_title))
+
             return fig
 
     return example_row
@@ -227,15 +224,7 @@ def pp_definition_row(
         fig.update_xaxes(range=bounds, title={"text": "Time"})
         fig.update_layout(showlegend=False)
         if plot_title:
-            fig.update_layout(
-                title={
-                    "text": plot_title,
-                    "y": 0.9,
-                    "x": 0.5,
-                    "xanchor": "center",
-                    "yanchor": "top",
-                },
-            )
+            fig.update_layout(title=styled_plot_title(plot_title))
         interval_fig = fig
 
         area = integrate.quad(example_process.intensity, start, start + length)[0]
@@ -332,11 +321,15 @@ def sepp_example_row(
             pointp.plot.intensity_function_scatter(
                 example_process.background.intensity, bounds[0], bounds[1]
             )
+        ).update_layout(
+            title=styled_plot_title(example_process.background.latex_string)
         )
         figs[FigName.tr].add_trace(
             pointp.plot.intensity_function_scatter(
                 example_process.trigger.intensity, bounds[0], bounds[1]
             )
+        ).update_layout(
+            title=styled_plot_title(example_process.trigger.latex_string)
         )
 
         for figure in figs.values():

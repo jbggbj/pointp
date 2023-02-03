@@ -20,7 +20,6 @@ inhom_periodic_row = dc.pp_example_row(
     "Inhomogeneous Example: Periodic",
     simulate.InHomEx1,
     [0, 4],
-    plot_title=r"$\lambda (t) = \alpha \cos{(2\omega \pi t)}$",
 )
 
 
@@ -28,7 +27,6 @@ inhom_exponential_row = dc.pp_example_row(
     "Inhomogeneous Example: Exponential",
     simulate.InHomEx2,
     [0, 10],
-    plot_title=r"$\lambda (t) = \frac{a}{w}e^{-t/w}$",
 )
 
 

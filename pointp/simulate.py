@@ -77,6 +77,7 @@ ModelParameter = namedtuple("ModelParameter", ["name", "min", "max"])
 class Process(ABC):
 
     model_parameters = List[ModelParameter]
+    latex_string = ""
 
     def __init__(self, *parameters):
         assert len(parameters) == len(self.model_parameters)
@@ -89,6 +90,7 @@ class Process(ABC):
 
     def plot_func(self, *args, **kwargs) -> go.Figure:
         """Returns Plotly Figure."""
+
 
 
 class Process1D(Process, ABC):
@@ -112,7 +114,7 @@ class Process1D(Process, ABC):
 
 class Homogeneous1D(Process1D):
     model_parameters = [ModelParameter("\u03BB", 0, 5)]
-
+    latex_string = r"$\lambda (t) = \lambda$"
     def __init__(self, rate: float):
         self.rate = rate
 
@@ -129,6 +131,7 @@ class Homogeneous1D(Process1D):
 
 class InHomEx1(Process1D):
     model_parameters = [ModelParameter("\u03B1", 0, 10), ModelParameter("\u03C9", 0, 5)]
+    latex_string = r"$\lambda (t) = \alpha \cos^2{(2\omega \pi t)}$"
 
     def __init__(self, amplitude: float, omega: float):
         self.amplitude = amplitude
@@ -144,6 +147,7 @@ class InHomEx1(Process1D):
 
 class InHomEx2(Process1D):
     model_parameters = [ModelParameter("a", 0, 10), ModelParameter("w", 0.01, 10)]
+    latex_string = r"$\lambda (t) = \frac{a}{w}e^{-t/w}$"
 
     def __init__(self, a: float, w: float):
         self.a = a

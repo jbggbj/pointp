@@ -9,6 +9,7 @@ from scipy.stats import poisson, expon, gamma
 class ExponentialTrigger(ps.Process1D):
 
     model_parameters = [ps.ModelParameter("a", 0, 1.5), ps.ModelParameter("w", 0.01, 10)]
+    latex_string = r"$\lambda (t) = \frac{a}{w}e^{-t/w}$"
 
     def __init__(self, a: float, w: float):
         self.a = a
@@ -27,6 +28,8 @@ class ExponentialTrigger(ps.Process1D):
 class GammaTrigger(ps.Process1D):
     model_parameters = [ps.ModelParameter("a", 0, 1.5),
                         ps.ModelParameter("b", 0.01, 10)]
+
+    latex_string = r"$$a \frac{x^{b-1}e^{-x}}{\Gamma (b)}$$"
 
     def __init__(self, a: float, b: float):
         self.a = a
