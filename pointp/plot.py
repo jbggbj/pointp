@@ -2,7 +2,7 @@ from typing import Callable, Union
 
 import numpy as np
 import plotly.graph_objs as go
-
+import plotly.express as px
 import pointp.dash_apps.dash_helper as dh
 from pointp.tools import pp_to_counts
 
@@ -11,6 +11,7 @@ class Defaults:
     bin_opacity = 0.65
     bargap = 0.0
 
+sepp_color_scale = "Blackbody"
 
 colors = dh.categoricalColorScheme
 # colors =["black", "gray", "forestgreen", "#4F94CD"]
@@ -119,11 +120,14 @@ def sepp_figure(
             fig.add_trace(points_plot(tk))
         else:
             assert len(generation) == len(tk)
-            for k in np.unique(generation):
+            gen_no = np.sort(np.unique(generation))
+            colors = px.colors.sample_colorscale(sepp_color_scale, len(gen_no))
+
+            for k, color in zip(gen_no, colors):
                 fig.add_trace(
                     points_plot(
                         tk[generation == k],
-                        color=dh.categoricalColorScheme[k - 1],
+                        color=color,
                         name=f"Generation {k}"
                     )
                 )
