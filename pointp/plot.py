@@ -65,14 +65,16 @@ def bins_plot(tk: np.ndarray, t_max: float, n_bins: int) -> go.Histogram:
     )
 
 
-def points_plot(tk: np.ndarray) -> go.Scatter:
+def points_plot(
+    tk: np.ndarray, color=DefaultColors.points, name="points"
+) -> go.Scatter:
     return go.Scatter(
         x=tk,
         y=np.ones_like(tk),
         mode="markers",
-        name="points",
+        name=name,
         marker_size=15,
-        marker_color=DefaultColors.points,
+        marker_color=color,
     )
 
 
@@ -97,6 +99,38 @@ def point_process_figure(
     if plot_bins:
         fig.add_trace(bins_plot(tk, t_max, n_bins))
         fig.update_layout(bargap=Defaults.bargap)
+    fig.update_layout(uirevision="True")
+    fig.update_xaxes(range=[t_min, t_max], title="Time")
+    return fig
+
+
+def sepp_figure(
+    tk: np.ndarray,
+    intensity: Union[float, Callable[[float], float]],
+    bounds: list[float],
+    generation: np.ndarray = None,
+    plot_intensity=True,
+    plot_points=True,
+) -> go.Figure:
+    fig = go.Figure()
+    t_min, t_max = bounds[0], bounds[1]
+    if plot_points:
+        if generation is None:
+            fig.add_trace(points_plot(tk))
+        else:
+            assert len(generation) == len(tk)
+            for k in np.unique(generation):
+                fig.add_trace(
+                    points_plot(
+                        tk[generation == k],
+                        color=dh.categoricalColorScheme[k - 1],
+                        name=f"Generation {k}"
+                    )
+                )
+
+    if plot_intensity:
+        fig.add_trace(intensity_function_scatter(intensity, t_min, t_max))
+
     fig.update_layout(uirevision="True")
     fig.update_xaxes(range=[t_min, t_max], title="Time")
     return fig

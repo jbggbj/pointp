@@ -1,7 +1,8 @@
 from pointp.simulate import Homogeneous1D, InHomEx2
 from pointp.sepp import sepp_class_1d
-
+import pointp.plot as pp
 import numpy as np
+import plotly
 
 # sepp = SelfExciting1D(1.0, 0.8, 2.0)
 # tst = sepp.simulate(0, 10, return_generation=True)
@@ -12,5 +13,6 @@ np.random.seed(7)
 new_class = sepp_class_1d(Homogeneous1D, InHomEx2)
 sepp_instance = new_class(1.5, 0.8, 2.0)
 tk, gen = sepp_instance.simulate(0, 10, return_generation=True)
+fig = pp.sepp_figure(tk, sepp_instance.intensity, [0, 10], generation=gen)
+fig.write_html("test.html")
 
-print(sepp_instance.intensity(np.linspace(0, 10, 20)))
