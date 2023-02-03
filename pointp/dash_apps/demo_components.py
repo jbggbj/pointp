@@ -11,6 +11,7 @@ from scipy import integrate
 from scipy.stats import poisson
 
 import pointp.dash_apps.dash_helper as dh
+import pointp.plot
 import pointp.simulate as ps
 from pointp import simulate
 from pointp.plot import point_process_figure
@@ -28,6 +29,7 @@ def process_sliders(process: ps.Process, name: str) -> tuple[dict, dict]:
     ]
 
     return slider_ids, sliders
+
 
 def pp_example_row(
     name: str,
@@ -55,13 +57,6 @@ def pp_example_row(
     button_id = dh.component_id(name, "button")
     bin_slider_id = dh.component_id(name + "_bins", "slider")
 
-    # slider_ids = {
-    #     p.name: dh.component_id(f"{name}_{p.name}", "slider") for p in parameters
-    # }
-    # sliders = [
-    #     dh.labeled_slider(p.min, p.max, p.name, id=slider_ids[p.name])
-    #     for p in parameters
-    # ]
     slider_ids, sliders = process_sliders(process, name)
     slider_rows = [dh.my_row(slider) for slider in sliders]
 
@@ -180,9 +175,7 @@ def pp_definition_row(
 
     example_process = None
     parameters = process.model_parameters
-    slider_ids = {
-        p.name: dh.component_id(f"{name}_{p.name}", "slider") for p in parameters
-    }
+    slider_ids, intensity_sliders = process_sliders(process, name)
     n_intensity_plot_points = 100
     dist_fig_id = dh.component_id(f"{name} definition distribution", "figure")
     interval_fig_id = dh.component_id(f"{name} interval select", "figure")
@@ -251,10 +244,6 @@ def pp_definition_row(
         fig.update_layout(showlegend=False)
         return interval_fig, fig
 
-    intensity_sliders = [
-        dh.labeled_slider(p.min, p.max, p.name, id=slider_ids[p.name])
-        for p in parameters
-    ]
     slider_col = dh.my_col(
         [dh.my_row(slider) for slider in intensity_sliders]
         + [html.Hr(style={"height": "6px"})]
@@ -289,10 +278,115 @@ def sepp_example_row(
     pts = np.ndarray([])
     generations = np.ndarray([])
     example_process = None
+    line_break = html.Hr(style={"height": "3px"})
+
+    class FigName:
+        bk = "background"
+        tr = "trigger"
+        pr = "process"
 
     background_parameters = process.background.model_parameters
     trigger_parameters = process.trigger.model_parameters
-    figures = ["background", "trigger", "process"]
-    fig_ids = {dh.component_id(f"{name} {f}", "fig") for f in figures}
+    figures = [FigName.bk, FigName.tr, FigName.pr]
+    fig_ids = {f: dh.component_id(f"{name} {f}", "fig") for f in figures}
 
-    pass
+    slider_ids, sliders = {}, {}
+    slider_ids[FigName.bk], sliders[FigName.bk] = process_sliders(
+        process.background, name
+    )
+    slider_ids[FigName.tr], sliders[FigName.tr] = process_sliders(process.trigger, name)
+
+    slider_rows = {
+        f: [dh.my_row(slider) for slider in sliders[f]]
+        for f in [FigName.bk, FigName.tr]
+    }
+    outputs = [
+        Output(fig_ids[FigName.bk], "figure"),
+        Output(fig_ids[FigName.tr], "figure"),
+        Output(fig_ids[FigName.pr], "figure"),
+    ]
+    model_parameter_inputs = [
+        Input(slider_ids[FigName.bk][p.name], "value") for p in background_parameters
+    ]
+    model_parameter_inputs += [
+        Input(slider_ids[FigName.tr][p.name], "value") for p in trigger_parameters
+    ]
+    button_id = dh.component_id(name, "button")
+    button_row = dh.my_row([dh.my_col(dbc.Button("Generate", id=button_id))])
+
+    @callback(*(outputs + [Input(button_id, "n_clicks")] + model_parameter_inputs))
+    def update_fig(n_clicks, *mparams) -> tuple[go.Figure, go.Figure]:
+        nonlocal pts
+        nonlocal example_process
+        example_process = process(*mparams)
+        tk, genk = example_process.simulate(*bounds, return_generation=True)
+        figs = {
+            FigName.bk: go.Figure(),
+            FigName.tr: go.Figure(),
+            FigName.pr: pointp.plot.sepp_figure(
+                tk, example_process.intensity, bounds, generation=genk
+            ),
+        }
+
+        figs[FigName.bk].add_trace(
+            pointp.plot.intensity_function_scatter(
+                example_process.background.intensity, bounds[0], bounds[1]
+            )
+        )
+        figs[FigName.tr].add_trace(
+            pointp.plot.intensity_function_scatter(
+                example_process.trigger.intensity, bounds[0], bounds[1]
+            )
+        )
+
+        for figure in figs.values():
+            figure.update_xaxes(title="Time")
+
+        return figs[FigName.bk], figs[FigName.tr], figs[FigName.pr]
+        # if ctx.triggered_id != bin_slider_id:
+        #     example_process = process(*mparams)
+        #     pts = example_process.simulate(*bounds)
+        # fig = example_process.plot_func(pts, bounds, n_bins=n_bins)
+        # fig.update_layout(
+        #     title={
+        #         "text": plot_title,
+        #         "y": 0.9,
+        #         "x": 0.5,
+        #         "xanchor": "center",
+        #         "yanchor": "top",
+        #     },
+        # )
+        # return fig
+
+    example_row = dbc.Container(
+        [
+            dh.my_row(
+                [
+                    dh.my_col(
+                        [dcc.Graph(id=fig_ids[FigName.bk], mathjax=True)], width=5
+                    ),
+                    dh.my_col(
+                        [dcc.Graph(id=fig_ids[FigName.tr], mathjax=True)], width=5
+                    ),
+                    dh.my_col(
+                        [dh.my_row(html.P("Background:"))]
+                        + slider_rows[FigName.bk]
+                        + [dh.my_row(line_break), dh.my_row(html.P("Trigger:"))]
+                        + slider_rows[FigName.tr],
+                        width=2,
+                        align="center",
+                    ),
+                ]
+            ),
+            dh.my_row(
+                [
+                    dh.my_col(
+                        [dcc.Graph(id=fig_ids[FigName.pr], mathjax=True)], width=10
+                    ),
+                    dh.my_col(button_row, width=2, align="center"),
+                ]
+            ),
+        ]
+    )
+
+    return example_row

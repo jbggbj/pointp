@@ -19,6 +19,7 @@ class ExampleIDs:
     ex4 = "Inhomogeneous: gamma"
     ex5 = "SEPP: gamma trigger"
     ex6 = "SEPP: periodic background"
+    ex7 = "TEST"
 
 
 hawkes_example = dc.pp_example_row(
@@ -49,11 +50,18 @@ sepp_periodic_example = dc.pp_example_row(
 
 )
 
+test_new_sepp_row = dc.sepp_example_row(
+    ExampleIDs.ex7,
+    sepp_class_1d(simulate.Homogeneous1D, ExponentialTrigger),
+    [0, 10]
+)
+
 example_list = [
     (ExampleIDs.ex3, hawkes_example),
     (ExampleIDs.ex4, gamma_trigger_example),
     (ExampleIDs.ex5, sepp_gamma_example),
     (ExampleIDs.ex6, sepp_periodic_example),
+    (ExampleIDs.ex7, test_new_sepp_row)
 ]
 
 title_row = dh.my_row(
