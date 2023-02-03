@@ -128,18 +128,18 @@ class Homogeneous1D(Process1D):
 
 
 class InHomEx1(Process1D):
-    model_parameters = [ModelParameter("a", 0, 10), ModelParameter("b", 0, 5)]
+    model_parameters = [ModelParameter("\u03B1", 0, 10), ModelParameter("\u03C9", 0, 5)]
 
-    def __init__(self, a: float, b: float):
-        self.a = a
-        self.b = b
+    def __init__(self, amplitude: float, omega: float):
+        self.amplitude = amplitude
+        self.omega = omega
 
     def intensity(self, t: np.ndarray) -> np.ndarray:
-        return self.a * np.cos(self.b * 2 * np.pi * t) ** 2
+        return self.amplitude * np.cos(self.omega * 2 * np.pi * t) ** 2
 
     def simulate(self, t_min: float, t_max: float) -> np.ndarray:
         """Return points for inhomogeneous point process."""
-        return poisson_process(self.intensity, t_min, t_max, f_max=self.a)
+        return poisson_process(self.intensity, t_min, t_max, f_max=self.amplitude)
 
 
 class InHomEx2(Process1D):
@@ -157,6 +157,11 @@ class InHomEx2(Process1D):
         num_pts = poisson(self.a).rvs()
         all_tk = expon(scale=self.w).rvs(size=num_pts)
         return np.sort(all_tk[all_tk <= t_max])
+
+# def sepp_intensity(background: Callable[
+#     [Union[float, np.ndarray]], Union[float, np.ndarray]], trigger: Callable[
+#     [Union[float, np.ndarray]], Union[float, np.ndarray]]) -> Union[float, np.ndarray]:
+#     p
 
 
 class SelfExciting1D(Process1D):
