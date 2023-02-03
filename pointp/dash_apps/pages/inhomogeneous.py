@@ -20,7 +20,7 @@ inhom_periodic_row = dc.pp_example_row(
     "Inhomogeneous Example: Periodic",
     simulate.InHomEx1,
     [0, 4],
-    plot_title=r"$\lambda (t) = a \cos{(2b\pi t)}$",
+    plot_title=r"$\lambda (t) = \alpha \cos{(2\omega \pi t)}$",
 )
 
 

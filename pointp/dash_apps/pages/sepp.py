@@ -3,8 +3,10 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 from dash import Input, Output, callback, dcc, html
 
+
 import pointp.dash_apps.demo_components as dc
 from pointp import simulate
+from pointp.sepp import sepp_class_1d, ExponentialTrigger, GammaTrigger
 from pointp.dash_apps import dash_helper as dh
 
 dash.register_page(__name__, order=4)
@@ -14,35 +16,44 @@ class ExampleIDs:
     ex1 = "Homogeneous Poisson"
     ex2 = "Inhomogeneous Poisson"
     ex3 = "SEPP: Hawkes Process"
+    ex4 = "Inhomogeneous: gamma"
+    ex5 = "SEPP: gamma trigger"
+    ex6 = "SEPP: periodic background"
 
-
-hom_def = dc.pp_definition_row(
-    ExampleIDs.ex1,
-    simulate.Homogeneous1D,
-    [0, 10],
-    plot_title="Homogeneous Poisson depends on interval length only.",
-)
-
-
-inhom_def_row = dc.pp_definition_row(
-    ExampleIDs.ex2,
-    simulate.InHomEx2,
-    [0, 10],
-    plot_title=r"Inhomogeneous Poisson depends on interval length and location only.",
-)
 
 hawkes_example = dc.pp_example_row(
-    "SEPP",
-    simulate.SelfExciting1D,
+    "SEPP: Hawkes",
+    sepp_class_1d(simulate.Homogeneous1D, ExponentialTrigger),
     [0, 10],
     plot_title=r"$$\lambda (t) = a + \sum_{t_k \leq t}\frac{b}{w} e^{-(t - t_{k})/w}$$",
 )
 
+gamma_trigger_example = dc.pp_example_row(
+    "Inhomogeneous: gamma",
+    GammaTrigger,
+    [0, 10]
+)
+
+
+sepp_gamma_example = dc.pp_example_row(
+    ExampleIDs.ex5,
+    sepp_class_1d(simulate.Homogeneous1D, GammaTrigger),
+    [0, 10],
+    # plot_title=r"$$\lambda (t) = a + \sum_{t_k \leq t}\frac{b}{w} e^{-(t - t_{k})/w}$$",
+)
+
+sepp_periodic_example = dc.pp_example_row(
+    ExampleIDs.ex6,
+    sepp_class_1d(simulate.InHomEx1, ExponentialTrigger),
+    [0, 8]
+
+)
 
 example_list = [
-    (ExampleIDs.ex1, hom_def),
-    (ExampleIDs.ex2, inhom_def_row),
     (ExampleIDs.ex3, hawkes_example),
+    (ExampleIDs.ex4, gamma_trigger_example),
+    (ExampleIDs.ex5, sepp_gamma_example),
+    (ExampleIDs.ex6, sepp_periodic_example),
 ]
 
 title_row = dh.my_row(
