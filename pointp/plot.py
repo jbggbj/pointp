@@ -53,8 +53,8 @@ def counts_function_scatter(tk: np.ndarray, t_max: float) -> go.Scatter:
     )
 
 
-def bins_plot(tk: np.ndarray, t_max: float, n_bins: int) -> go.Histogram:
-    bin_width = t_max / n_bins
+def bins_plot(tk: np.ndarray, t_min: float, t_max: float, n_bins: int) -> go.Histogram:
+    bin_width = (t_max -t_min) / n_bins
     return go.Histogram(
         x=tk,
         name="binned",
@@ -98,10 +98,11 @@ def point_process_figure(
     if plot_counts:
         fig.add_trace(counts_function_scatter(tk, t_max))
     if plot_bins:
-        fig.add_trace(bins_plot(tk, t_max, n_bins))
+        fig.add_trace(bins_plot(tk, t_min, t_max, n_bins))
         fig.update_layout(bargap=Defaults.bargap)
     fig.update_layout(uirevision="True")
     fig.update_xaxes(range=[t_min, t_max], title="Time")
+    fig.update_yaxes(rangemode="nonnegative")
     return fig
 
 

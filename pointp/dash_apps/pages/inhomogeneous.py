@@ -13,7 +13,8 @@ inhom_def_row = dc.pp_definition_row(
     "Inhomogeneous Poisson Process",
     simulate.InHomEx2,
     [0, 10],
-    plot_title=r"$\lambda (t) = a + \sum_{k}\frac{b}{w} e^{-(t - t_{k})/w}$",
+    # plot_title=r"$\lambda (t) = a + \sum_{k}\frac{b}{w} e^{-(t - t_{k})/w}$",
+    plot_title = simulate.InHomEx2.latex_string
 )
 
 inhom_periodic_row = dc.pp_example_row(
