@@ -8,7 +8,7 @@ import plotly.express as px
 import plotly.graph_objs as go
 from dash import Input, Output, callback, ctx, dcc, html
 from scipy import integrate
-from scipy.stats import poisson
+from scipy.stats import poisson, binom
 
 import pointp.dash_apps.dash_helper as dh
 import pointp.plot
@@ -158,6 +158,29 @@ def poisson_dist_fig(
         line_width=2.0,
     )
     fig.update_layout(title="Poisson Distribution")
+    fig.update_yaxes(title={"text": "Probability"})
+    return fig
+
+
+def binom_dist_fig(
+    n: int, p: float, annotation: str = "mean"
+) -> go.Figure:
+    dist = binom(n, p)
+
+    x_bins = np.arange(n + 1)
+    fig = go.Figure(
+        data=go.Bar(name="Binnom", x=x_bins, y=dist.pmf(x_bins)),
+    )
+    fig.update_yaxes(range=[0, 1])
+    fig.add_vline(
+        x=dist.mean(),
+        annotation_text=annotation,
+        line_color="black",
+        annotation_position="top",
+        opacity=1,
+        line_width=2.0,
+    )
+    fig.update_layout(title="Binomial Distribution")
     fig.update_yaxes(title={"text": "Probability"})
     return fig
 
