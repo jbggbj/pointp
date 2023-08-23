@@ -184,6 +184,31 @@ def binom_dist_fig(
     fig.update_yaxes(title={"text": "Probability"})
     return fig
 
+def bp_limit_fig(
+    rate: float, n: int, annotation: str = "mean"
+) -> go.Figure:
+    pdist = poisson(rate)
+    p = rate / n
+    bdist = binom(n, p)
+    max_n = rate * 5
+    x_bins = np.arange(max_n + 1)
+    fig = go.Figure(
+        data=go.Bar(name="B(n, rate/n)", x=x_bins, y=bdist.pmf(x_bins)),
+    )
+    fig.add_trace(go.Bar(name="P(rate)", x=x_bins, y=pdist.pmf(x_bins)))
+    # fig.update_yaxes(range=[0, 1])
+    fig.add_vline(
+        x=pdist.mean(),
+        annotation_text=annotation,
+        line_color="black",
+        annotation_position="top",
+        opacity=1,
+        line_width=2.0,
+    )
+    fig.update_layout(title=r"Binomial $\longrightarrow Poisson")
+    fig.update_xaxes(title={r"text": "k"})
+    fig.update_yaxes(title={"text": "Probability"})
+    return fig
 
 def pp_definition_row(
     name: str,
