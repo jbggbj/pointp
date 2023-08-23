@@ -42,7 +42,7 @@ title_row = dh.my_row(
         html.Div(
             [
                 html.H1(
-                    "Self-Exciting Point Process in 1D",
+                    "Poisson Process",
                     style={"textAlign": "center", "margin-top": "25px"},
                 )
             ]
